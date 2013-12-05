@@ -32,8 +32,7 @@
 		<!-- sec:intercept-url pattern="/secure/*" access="isAuthenticated()" />
 		<sec:intercept-url pattern="/*" access="permitAll" / -->
 
-		<!-- sec:form-login login-page="/loginpage" default-target-url="/secure/main" 
-			authentication-failure-url="/loginfail" / -->
+		
 		<sec:form-login login-page="/home" default-target-url="/otaniemi"
 			authentication-failure-url="/failure" />
 

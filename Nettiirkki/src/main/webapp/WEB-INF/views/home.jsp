@@ -10,7 +10,7 @@
 </h1>
 
 <P>  The time on the server is ${serverTime}. </P>
-<form action="j_spring_security_check">
+<form action="j_spring_security_check" method="post">
 <input id="username" type="text" placeholder="username plz" name="j_username"/>
 <input id="password" type="password" placeholder="password plz" name="j_password"/>
 <button type="submit"></button>

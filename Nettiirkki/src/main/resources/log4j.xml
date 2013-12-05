@@ -31,6 +31,9 @@
 	<logger name="org.springframework.web">
 		<level value="debug" />
 	</logger>
+	<logger name="org.springframework.security.web.authentication">
+		<level value="DEBUG" />
+	</logger>
 
 	<!-- Root Logger -->
 	<root>

@@ -49,6 +49,13 @@
 			<artifactId>commons-dbcp</artifactId>
 			<version>20030825.184428</version>
 		</dependency>
+		
+		<!-- MYSQL DRIVER-->
+		<dependency>
+			<groupId>mysql</groupId> 
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.6</version>
+		</dependency>
 	
 		<!-- COMMONS POOL -->
 		<dependency>
@@ -56,7 +63,12 @@
 			<artifactId>commons-pool</artifactId>
 			<version>20030825.183949</version>
 		</dependency>
-	
+		<!-- COMMONS COLLECTIONS -->
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>20040616</version>
+		</dependency>
 		<!-- SPRING CORE -->
 		<dependency>
 			<groupId>org.springframework</groupId>
