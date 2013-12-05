@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:sec="http://www.springframework.org/schema/security" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+		
+		
+		
+		
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+			<property name="driverClassName" value="${db.driver}" />
+			<property name="url" value="${db.url}" />
+			<property name="username" value="${db.username}" />
+			<property name="password" value="${db.password}" />
+			<property name="maxWait" value="30000" />
+			<property name="maxIdle" value="-1" />
+			<property name="maxActive" value="-1" />
+	</bean>
+	
+	<!-- SPRING SECURITY -->
+	<sec:http auto-config="true" use-expressions="true">
+
+		<!-- sec:intercept-url pattern="/secure/*" access="isAuthenticated()" />
+		<sec:intercept-url pattern="/*" access="permitAll" / -->
+
+		<!-- sec:form-login login-page="/loginpage" default-target-url="/secure/main" 
+			authentication-failure-url="/loginfail" / -->
+		<sec:form-login login-page="/home" default-target-url="/otaniemi"
+			authentication-failure-url="/failure" />
+
+		<!--sec:logout logout-success-url="/logout" / -->
+		<sec:logout logout-success-url="/logout" />
+
+	</sec:http>
+
+	<bean id="encoder"
+		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+
+   <!-- users-by-username-query needs to look like this -->
+	<sec:authentication-manager>
+		<sec:authentication-provider>
+			<sec:password-encoder ref="encoder" />
+			<sec:jdbc-user-service data-source-ref="dataSource"
+				users-by-username-query="select username, password, 1 as enabled from Auth where username=?" />
+				<!-- authorities-by-username-query="select email, role_id from Users WHERE email = ?" /> --> 
+		</sec:authentication-provider>
+	</sec:authentication-manager>
+
+	
+</beans>
