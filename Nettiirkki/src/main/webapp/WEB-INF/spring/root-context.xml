@@ -40,6 +40,10 @@
 		<sec:logout logout-success-url="/logout" />
 
 	</sec:http>
+	
+	<!-- enable post/preauthorizes and filters -->
+	<sec:global-method-security
+		pre-post-annotations="enabled" />
 
 	<bean id="encoder"
 		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
@@ -49,8 +53,8 @@
 		<sec:authentication-provider>
 			<sec:password-encoder ref="encoder" />
 			<sec:jdbc-user-service data-source-ref="dataSource"
-				users-by-username-query="select username, password, 1 as enabled from Auth where username=?" />
-				<!-- authorities-by-username-query="select email, role_id from Users WHERE email = ?" /> --> 
+				users-by-username-query="select username, password, 1 as enabled from Users where username=?"
+				authorities-by-username-query="select username, authority from Users WHERE username = ?" /> 
 		</sec:authentication-provider>
 	</sec:authentication-manager>
 
