@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.laurikaariainen.nettiirkki.bean.Channel;
 import com.laurikaariainen.nettiirkki.service.ChannelService;
 
+
+
 /**
  * Handles requests for the application home page.
  */
@@ -34,6 +36,7 @@ public class JSONController {
 	public String home(Locale locale, Model model) {
 		logger.info("Welcome home! The client locale is {}.", locale);
 		
+	
 		Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
 		
@@ -43,6 +46,11 @@ public class JSONController {
 		
 		return "home";
 	}
+	/**
+	 * handles requests for channel #otaniemi
+	 * @param model
+	 * @return view 'channel'
+	 */
 	
 	@RequestMapping(value ="/otaniemi", method = RequestMethod.GET)
 	public String getOtaniemi(Model model){
@@ -54,6 +62,11 @@ public class JSONController {
 		return "channel";
 	}
 	
+	/**
+	 * handles requests for channel #punttis
+	 * @param model
+	 * @return view 'channel'
+	 */
 	@RequestMapping(value ="/punttis", method = RequestMethod.GET)
 	public String getpunttis(Model model){
 		
@@ -64,6 +77,11 @@ public class JSONController {
 		return "channel";
 	}
 	
+	/**
+	 * handles requests for channel !3pyy
+	 * @param model
+	 * @return view 'channel'
+	 */
 	@RequestMapping(value ="/3pyy", method = RequestMethod.GET)
 	public String get3pyy(Model model){
 		

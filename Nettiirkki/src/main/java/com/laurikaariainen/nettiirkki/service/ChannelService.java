@@ -3,6 +3,8 @@
  */
 package com.laurikaariainen.nettiirkki.service;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import com.laurikaariainen.nettiirkki.bean.Channel;
 
 
@@ -14,10 +16,10 @@ import com.laurikaariainen.nettiirkki.bean.Channel;
 
 public interface ChannelService {
 
-	//@PreAuthorize("isAuthenticated()")
+	@PreAuthorize("hasRole('2')")
 	public abstract void updateChannel(String name);
 	
-	//@PreAuthorize("isAuthenticated()")
+	@PreAuthorize("hasRole('2')")
 	public abstract Channel getChannel(String name);
 	
 	
