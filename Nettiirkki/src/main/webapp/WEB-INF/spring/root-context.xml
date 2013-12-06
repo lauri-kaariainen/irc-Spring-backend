@@ -37,7 +37,7 @@
 			authentication-failure-url="/" />
 
 		<!--sec:logout logout-success-url="/logout" / -->
-		<sec:logout logout-success-url="/logout" />
+		<sec:logout logout-success-url="/" />
 
 	</sec:http>
 	

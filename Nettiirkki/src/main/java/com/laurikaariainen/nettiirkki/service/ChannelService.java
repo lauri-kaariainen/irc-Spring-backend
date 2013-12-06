@@ -16,10 +16,10 @@ import com.laurikaariainen.nettiirkki.bean.Channel;
 
 public interface ChannelService {
 
-	@PreAuthorize("hasRole('2')")
+	@PreAuthorize("hasRole('superman')")
 	public abstract void updateChannel(String name);
 	
-	@PreAuthorize("hasRole('2')")
+	@PreAuthorize("hasRole('superman')")
 	public abstract Channel getChannel(String name);
 	
 	
