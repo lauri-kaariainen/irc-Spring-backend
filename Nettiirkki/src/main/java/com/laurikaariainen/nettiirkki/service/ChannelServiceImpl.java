@@ -21,8 +21,8 @@ public class ChannelServiceImpl implements ChannelService{
 	private ChannelDao channelDao;
 	
 	@Override
-	public void updateChannel(String name) {
-		channelDao.updateChannel(name);
+	public void updateChannel(Channel channel) {
+		channelDao.updateChannel(channel);
 		
 	}
 
@@ -30,6 +30,8 @@ public class ChannelServiceImpl implements ChannelService{
 	public Channel getChannel(String string) {
 		return channelDao.getChannel(string);
 	}
+
+	
 	
 	
 

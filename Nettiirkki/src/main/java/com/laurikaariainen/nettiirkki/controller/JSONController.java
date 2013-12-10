@@ -1,10 +1,16 @@
 package com.laurikaariainen.nettiirkki.controller;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
+import javax.json.Json;
+import javax.json.stream.JsonGenerator;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.laurikaariainen.nettiirkki.bean.Channel;
 import com.laurikaariainen.nettiirkki.service.ChannelService;
+
 
 
 
@@ -66,16 +73,37 @@ public class JSONController {
 	 * handles requests for channel #punttis
 	 * @param model
 	 * @return view 'channel'
+	 * @throws IOException 
 	 */
 	@RequestMapping(value ="/punttis", method = RequestMethod.GET)
-	public String getpunttis(Model model){
+	public void getpunttis(Model model, HttpServletResponse response) throws IOException{
+		response.setContentType("application/json");
+		PrintWriter out = response.getWriter();
+		
+		JsonGenerator gen = Json.createGenerator(out);
 		
 		Channel channel = channelService.getChannel("#punttis");
-		System.out.println("*"+channel.getText()+"*");
-		model.addAttribute("channel", channel);
+		//System.out.println("*"+channel.getText()+"*");
+		//model.addAttribute("channel", channel);
 		
-		return "channel";
+		//gen.writeStartArray();
+		
+		gen.writeStartObject();
+		
+		gen.write("name", channel.getName());
+		gen.write("text", channel.getText());
+		gen.write("timestamp", channel.getLastChanged().toString());
+		
+		
+		
+		gen.writeEnd();
+		
+		gen.close();
+		return;
 	}
+
+	
+
 	
 	/**
 	 * handles requests for channel !3pyy

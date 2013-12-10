@@ -13,10 +13,10 @@ import com.laurikaariainen.nettiirkki.bean.Channel;
 public interface ChannelDao {
 	
 	/**
-	 * Doesn't do anything just yet.
+	 * Updates channel if channels lastChanged value is older than in DB
 	 * @param name
 	 */
-	public abstract void updateChannel(String name);
+	public abstract void updateChannel(Channel channel);
 
 	/**
 	 * Gets a Channel with up-to-date logs.

@@ -4,6 +4,8 @@
 package com.laurikaariainen.nettiirkki.bean;
 
 
+import java.sql.Timestamp;
+
 import javax.validation.constraints.Size;
 
 /**
@@ -18,6 +20,8 @@ public class Channel {
 	@Size(min = 1)
 	private String text;
 
+	private Timestamp lastChanged;
+	
 	public String getName() {
 		return name;
 	}
@@ -28,6 +32,14 @@ public class Channel {
 
 	public String getText() {
 		return text;
+	}
+
+	public Timestamp getLastChanged() {
+		return lastChanged;
+	}
+
+	public void setLastChanged(Timestamp lastChanged) {
+		this.lastChanged = lastChanged;
 	}
 
 	public void setText(String text) {
