@@ -21,8 +21,8 @@ public class ChannelServiceImpl implements ChannelService{
 	private ChannelDao channelDao;
 	
 	@Override
-	public void updateChannel(Channel channel) {
-		channelDao.updateChannel(channel);
+	public boolean updateChannel(Channel channel) {
+		return channelDao.updateChannel(channel);
 		
 	}
 

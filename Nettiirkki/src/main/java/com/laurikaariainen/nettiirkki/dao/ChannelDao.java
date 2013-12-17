@@ -15,8 +15,9 @@ public interface ChannelDao {
 	/**
 	 * Updates channel if channels lastChanged value is older than in DB
 	 * @param name
+	 * @return true if updated
 	 */
-	public abstract void updateChannel(Channel channel);
+	public abstract boolean updateChannel(Channel channel);
 
 	/**
 	 * Gets a Channel with up-to-date logs.
