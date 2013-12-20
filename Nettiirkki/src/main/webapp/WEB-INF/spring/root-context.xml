@@ -29,8 +29,8 @@
 	<!-- SPRING SECURITY -->
 	<sec:http auto-config="true" use-expressions="true">
 
-		<!-- sec:intercept-url pattern="/secure/*" access="isAuthenticated()" />
-		<sec:intercept-url pattern="/*" access="permitAll" / -->
+		<sec:intercept-url pattern="/" access="permitAll" />
+		<sec:intercept-url pattern="/*" access="hasRole('superman')" />
 
 		
 		<sec:form-login login-page="/" default-target-url="/otaniemi"
