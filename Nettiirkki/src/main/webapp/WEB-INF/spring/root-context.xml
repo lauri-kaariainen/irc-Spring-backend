@@ -15,6 +15,12 @@
 	<context:property-placeholder location="classpath*:*.properties" />
 		
 		
+		
+	<bean id="atmospherePubSub" class="com.laurikaariainen.nettiirkki.util.MeteorPubSub" >
+	</bean>	
+		
+		
+		
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 			<property name="driverClassName" value="${db.driver}" />
@@ -30,8 +36,8 @@
 	<sec:http auto-config="true" use-expressions="true">
 
 		<sec:intercept-url pattern="/" access="permitAll" />
-		<sec:intercept-url pattern="/*" access="hasRole('superman')" />
-
+		<sec:intercept-url pattern="/websocket/*" access="hasRole('superman')" />
+		<sec:intercept-url pattern="/**" access="hasRole('superman')" />
 		
 		<sec:form-login login-page="/" default-target-url="/otaniemi"
 			authentication-failure-url="/" />
@@ -45,7 +51,7 @@
 	<bean id="encoder"
 		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
 
-   <!-- users-by-username-query needs to look like this -->
+   <!-- standard users-by-username-query needs to look like this: <code>select username, password, enabled </code> -->
 	<sec:authentication-manager>
 		<sec:authentication-provider>
 			<sec:password-encoder ref="encoder" />

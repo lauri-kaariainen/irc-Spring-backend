@@ -24,7 +24,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.laurikaariainen.nettiirkki.bean.Channel;
 import com.laurikaariainen.nettiirkki.service.ChannelService;
+import com.laurikaariainen.nettiirkki.util.MeteorPubSub;
 
+import org.atmosphere.cpr.ApplicationConfig;
+import org.atmosphere.cpr.AtmosphereResource;
+import org.atmosphere.cpr.Broadcaster;
+import org.atmosphere.cpr.BroadcasterFactory;
+import org.atmosphere.cpr.FrameworkConfig;
+import org.atmosphere.cpr.HeaderConfig;
+import org.atmosphere.websocket.WebSocketEventListenerAdapter;
 
 
 
@@ -33,6 +41,12 @@ import com.laurikaariainen.nettiirkki.service.ChannelService;
  */
 @Controller
 public class JSONController {
+	
+	@Inject
+	private MeteorPubSub meteorPubSub;
+	
+	
+	
 	
 	/**
 	 * channels to be supported
@@ -70,7 +84,7 @@ public class JSONController {
 	 * @throws IOException
 	 */
 	
-
+/*
 	@RequestMapping(value ="/{name}", method = RequestMethod.GET)
 	public void getChannel(@PathVariable String name, HttpServletResponse response, HttpServletRequest request) throws IOException{
 		response.setContentType("application/json");
@@ -136,9 +150,105 @@ public class JSONController {
 		return;
 	}
 
+*/
+	/**
+	 * Handles channel GETs for all channels in private array 'CHANNELS'
+	 * Also updates via get parameters.
+	 * * This method takes a request to subscribe to the topic
+	 * @param name
+	 * @param @pathvariable name, response, request
+	 * @throws IOException
+	 */
+	
+	@RequestMapping(value ="websocket/{name}", method = RequestMethod.GET)
+	public void getChannel(@PathVariable String name, HttpServletResponse response, HttpServletRequest request) throws IOException{
+		response.setContentType("application/json");
+		
+		
+		boolean wasFound = false;
+		for (String channel : CHANNELS){
+			if(channel.contains(name)) {
+				name = channel;
+				wasFound = true;
+				break;
+			}
+		}
+		if(wasFound == false)
+			return;
+		
+		
+		meteorPubSub.doGet(request, response);
+		
+	
+        /*
+        Channel returnChannel;
+		
+		//GET parameter UPDATE called
+		if(request.getParameter("update") != null){
+			
+			long age = Long.parseLong(request.getParameter("update"));
+			Channel c = new Channel();
+			c.setName(name);
+			c.setLastChanged(new Timestamp(age));
+			if(channelService.updateChannel(c)){
+				returnChannel = c;
+				
+				
+				System.out.println("did indeed update");	
+				
+			}
+			else { // no update necessary, send 304 NOT CHANGED back
+				response.setStatus(304);
+				System.out.println("did indeed cancel");
+				return;
+			}
+			
+		}
+		else {  // Nobody wanted to update, just get the channel
+			returnChannel = channelService.getChannel(name);
+		}
+		
+		PrintWriter out = response.getWriter();
+		
+		JsonGenerator gen = Json.createGenerator(out);
+		
+		
+	
+		gen.writeStartObject();
+		
+		gen.write("name", returnChannel.getName());
+		gen.write("text", returnChannel.getText());
+		gen.write("timestamp", returnChannel.getLastChanged().getTime());
+		
+		
+		
+		gen.writeEnd();
+		
+		gen.close();
+         */
+		return;
+	}
 
-	
-	
+	@RequestMapping(value ="websocket/{name}", method = RequestMethod.POST)
+	public void broadcastToChannel(@PathVariable String name, HttpServletResponse response, HttpServletRequest request) throws IOException{
+		//response.setContentType("application/json");
+		
+		
+		boolean wasFound = false;
+		for (String channel : CHANNELS){
+			if(channel.contains(name)) {
+				name = channel;
+				wasFound = true;
+				break;
+			}
+		}
+		if(wasFound == false)
+			return;
+		
+		
+		meteorPubSub.doPost(request, response);
+		
+	}
 	
 	/**
 	 * handles requests for channel #otaniemi
