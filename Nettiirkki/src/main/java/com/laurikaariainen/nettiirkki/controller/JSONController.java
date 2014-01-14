@@ -296,10 +296,12 @@ public class JSONController {
 		 Broadcaster b = lookupBroadcaster(request.getPathInfo());
          String message = request.getReader().readLine();
          
-         if (message != null && message.indexOf("message") != -1) {
-         	//b.broadcast(message.substring("message=".length()));
-         	b.broadcast(json);
-         }
+         
+         
+     	b.broadcast(json);
+     	
+        
+        
 		
 		return;
 		

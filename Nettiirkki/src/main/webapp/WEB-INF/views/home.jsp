@@ -86,7 +86,7 @@
 	                    detectedTransport = response.transport;
 	                    if (response.status == 200) {
 	                        var data = response.responseBody;
-	                        console.log(typeof data);
+	                        //console.log(typeof data);
 	                        if (data.length > 0) {
 	                            $('ul').prepend($('<li></li>').text(" Message Received: " + data + " but detected transport is " + detectedTransport));
 	                        }
