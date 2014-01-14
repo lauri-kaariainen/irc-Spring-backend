@@ -11,6 +11,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 import javax.json.Json;
+import javax.json.JsonObject;
 import javax.json.stream.JsonGenerator;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -18,11 +19,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,7 +37,6 @@ import org.atmosphere.cpr.Broadcaster;
 import org.atmosphere.cpr.BroadcasterFactory;
 import org.atmosphere.cpr.FrameworkConfig;
 import org.atmosphere.cpr.HeaderConfig;
-
 import org.atmosphere.websocket.WebSocketEventListenerAdapter;
 
 
@@ -174,7 +172,7 @@ public class JSONController {
 	public void getChannel(@PathVariable String name,Model model, HttpServletResponse response, HttpServletRequest request, Principal principal, Authentication authentication) throws IOException{
 		//response.setContentType("application/json");
 		
-		System.out.println("is this reached ever?");
+		
 		
 		boolean wasFound = false;
 		for (String channel : CHANNELS){
@@ -289,9 +287,21 @@ public class JSONController {
 		}
 		if(wasFound == false)
 			return;
+		Channel channel = channelService.getChannel(name);
+		JsonObject json = Json.createObjectBuilder().add("name",channel.getName()).
+				add("text", channel.getText() ).
+				add("timestamp",channel.getLastChanged().toString()).
+				build();
 		
-		this.doPost(request);
-		//doPost(request, response);
+		 Broadcaster b = lookupBroadcaster(request.getPathInfo());
+         String message = request.getReader().readLine();
+         
+         if (message != null && message.indexOf("message") != -1) {
+         	//b.broadcast(message.substring("message=".length()));
+         	b.broadcast(json);
+         }
+		
+		return;
 		
 	}
 	
@@ -299,33 +309,41 @@ public class JSONController {
 
     // See AtmosphereHandlerPubSub example - same code as GET
     private void doGet(
-                    AtmosphereResource r,
+                    AtmosphereResource resource,
                     HttpServletRequest req, HttpServletResponse res) {
             // Log all events on the console, including WebSocket events.
-            r.addEventListener(new WebSocketEventListenerAdapter());
+            resource.addEventListener(new WebSocketEventListenerAdapter());
 
-            res.setContentType("text/html;charset=ISO-8859-1");
-
+            //res.setContentType("text/html;charset=ISO-8859-1");
+            res.setContentType("application/json");
             Broadcaster b = lookupBroadcaster(req.getPathInfo());
-            r.setBroadcaster(b);
+            resource.setBroadcaster(b);
 
             String header = req.getHeader(HeaderConfig.X_ATMOSPHERE_TRANSPORT);
             if (HeaderConfig.LONG_POLLING_TRANSPORT.equalsIgnoreCase(header)) {
                     req.setAttribute(ApplicationConfig.RESUME_ON_BROADCAST,
                                     Boolean.TRUE);
-                    r.suspend(-1);
+                    resource.suspend(-1);
             } else {
-                    r.suspend(-1);
+                    resource.suspend(-1);
             }
     }
 
     // See AtmosphereHandlerPubSub example - same code as POST
-    private void doPost(HttpServletRequest req) throws IOException {
+    /**
+     * 
+     * @param req
+     * @param channel
+     * @throws IOException
+     * @deprecated
+     */
+    private void doPost(HttpServletRequest req, Channel channel) throws IOException {
             Broadcaster b = lookupBroadcaster(req.getPathInfo());
             String message = req.getReader().readLine();
-
+            
             if (message != null && message.indexOf("message") != -1) {
-                    b.broadcast(message.substring("message=".length()));
+            	//b.broadcast(message.substring("message=".length()));
+            	b.broadcast(channel);
             }
     }
 
