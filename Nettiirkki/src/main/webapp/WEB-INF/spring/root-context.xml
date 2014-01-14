@@ -37,7 +37,7 @@
 		<sec:intercept-url pattern="/websocket/*" access="hasRole('superman')"/>
 		<sec:intercept-url pattern="/**" access="hasRole('superman')" />
 		
-		<sec:form-login login-page="/" default-target-url="/"
+		<sec:form-login login-page="/" default-target-url="/" always-use-default-target="true"
 			authentication-failure-url="/" />
 
 		<!--sec:logout logout-success-url="/logout" / -->
