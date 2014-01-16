@@ -78,8 +78,8 @@ public class JSONController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Locale locale, Model model, HttpServletRequest request, Authentication authentication) {
 		logger.info("Welcome home! The client locale is {}.", locale);
-		for(Cookie cookie : request.getCookies())
-			System.out.println(cookie.getName() +":"+ cookie.getValue());
+	//	for(Cookie cookie : request.getCookies())
+	//		System.out.println(cookie.getName() +":"+ cookie.getValue());
 		//System.out.println(authentication);
 		
 		
@@ -205,7 +205,7 @@ public class JSONController {
 		
 		//System.out.println("Authentication: "+authentication);
 		//FWIW, THIS MUST BE DONE BECAUSE SECURITYCONTEXTHOLDER IS EMPTY WHEN METHOD IS REACHED VIA AJAX REQUEST !
-		if(SecurityContextHolder.getContext().getAuthentication() == null){
+	/*	if(SecurityContextHolder.getContext().getAuthentication() == null){
 			try {
 			    SecurityContext ctx = SecurityContextHolder.createEmptyContext();
 			    SecurityContextHolder.setContext(ctx);
@@ -217,58 +217,8 @@ public class JSONController {
 				//Proper subscribe 
 				this.doGet(resource, request, resource.getResponse());
 
-				
-		         //'MAIN' LOOP 
-			
 
-				Channel channel = channelService.getChannel(name);
-				JsonObject json = Json.createObjectBuilder().add("name",channel.getName()).
-						add("text", channel.getText() ).
-						add("timestamp",channel.getLastChanged().toString()).
-						build();
-				
-				 Broadcaster broadcaster = lookupBroadcaster(request.getPathInfo());
-		     
-		      
-		         broadcaster.broadcast(json);
-			         
 					
-				  boolean completed = false;
-				  while(!completed){
-					  if(channelService.updateChannel(channel) == true){
-						  channel = channelService.getChannel(name);
-						  json = Json.createObjectBuilder().add("name",channel.getName()).
-								  add("text", channel.getText() ).
-								  add("timestamp",channel.getLastChanged().toString()).
-								  build();
-						  
-						  broadcaster = lookupBroadcaster(request.getPathInfo());
-						  
-						  
-						  broadcaster.broadcast(json);
-						  completed = true;
-				    
-					  }
-					  System.out.println("principal: "+ principal);
-					  System.out.println("SecurityContext: "+SecurityContextHolder.getContext());
-					  try {
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						completed = true;
-						e.printStackTrace();
-					}
-				  }
-			    
-			    
-			    
-			    
-			    
-			    
-			    
-			    
-			    
-			    
-			    
 			    
 			}
 			finally{
@@ -276,117 +226,13 @@ public class JSONController {
 				SecurityContextHolder.clearContext();
 			}
 		}
-		//DEBUG
-		/*
-		for(Cookie cookie : request.getCookies())
-			System.out.println(cookie.getName() +":"+ cookie.getValue());
-		System.out.println("securitycontextholder->context: "+SecurityContextHolder.getContext());
-		System.out.println("securitycontextholder->context->authentication: "+SecurityContextHolder.getContext().getAuthentication());
-		System.out.println("contextHolderStrategy: "+SecurityContextHolder.getContextHolderStrategy());
-		System.out.println("getUserPrincipal: "+request.getUserPrincipal());
-		System.out.println("request.getAuthType(): "+request.getAuthType());
-		System.out.println("user-agent: "+request.getHeader("User-Agent"));
-		
-		System.out.println("requestURL: "+request.getRequestURL());
-		
-		System.out.println("first the channel: "+channelService.getChannel(name));
-		
-		*/
-		/*
-		AtmosphereResource resource = (AtmosphereResource) request
+		  */
+	    AtmosphereResource resource = (AtmosphereResource) request
                 .getAttribute(FrameworkConfig.ATMOSPHERE_RESOURCE);
 		//Proper subscribe 
 		this.doGet(resource, request, resource.getResponse());
 
-		
-         //'MAIN' LOOP 
-	
-
-		Channel channel = channelService.getChannel(name);
-		JsonObject json = Json.createObjectBuilder().add("name",channel.getName()).
-				add("text", channel.getText() ).
-				add("timestamp",channel.getLastChanged().toString()).
-				build();
-		
-		 Broadcaster broadcaster = lookupBroadcaster(request.getPathInfo());
-     
-      
-         broadcaster.broadcast(json);
-	         
-			
-		  boolean completed = false;
-		  while(!completed){
-			  if(channelService.updateChannel(channel) == true){
-				  channel = channelService.getChannel(name);
-				  json = Json.createObjectBuilder().add("name",channel.getName()).
-						  add("text", channel.getText() ).
-						  add("timestamp",channel.getLastChanged().toString()).
-						  build();
-				  
-				  broadcaster = lookupBroadcaster(request.getPathInfo());
-				  
-				  
-				  broadcaster.broadcast(json);
-				  completed = true;
-		    
-			  }
-			  System.out.println("principal: "+ principal);
-			  System.out.println("SecurityContext: "+SecurityContextHolder.getContext());
-			  try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				completed = true;
-				e.printStackTrace();
-			}
-		  }
-		*/ 
-        /*
-        Channel returnChannel;
-		
-		//GET parameter UPDATE called
-		if(request.getParameter("update") != null){
-			
-			long age = Long.parseLong(request.getParameter("update"));
-			Channel c = new Channel();
-			c.setName(name);
-			c.setLastChanged(new Timestamp(age));
-			if(channelService.updateChannel(c)){
-				returnChannel = c;
-				
-				
-				System.out.println("did indeed update");	
-				
-			}
-			else { // no update necessary, send 304 NOT CHANGED back
-				response.setStatus(304);
-				System.out.println("did indeed cancel");
-				return;
-			}
-			
-		}
-		else {  // Nobody wanted to update, just get the channel
-			returnChannel = channelService.getChannel(name);
-		}
-		
-		PrintWriter out = response.getWriter();
-		
-		JsonGenerator gen = Json.createGenerator(out);
-		
-		
-	
-		gen.writeStartObject();
-		
-		gen.write("name", returnChannel.getName());
-		gen.write("text", returnChannel.getText());
-		gen.write("timestamp", returnChannel.getLastChanged().getTime());
-		
-		
-		
-		gen.writeEnd();
-		
-		gen.close();
-         */
-		//return;
+		return;
 	}
 
 	@RequestMapping(value ="websocket/{name}", method = RequestMethod.POST)
