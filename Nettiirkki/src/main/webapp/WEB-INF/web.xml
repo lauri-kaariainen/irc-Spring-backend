@@ -13,6 +13,11 @@
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
+	
+	<!-- Creates the needed startup service on start -->
+	<listener>
+		<listener-class>com.laurikaariainen.nettiirkki.util.StartupListener</listener-class>
+	</listener>
 
 	<!-- Processes application requests -->
 	<servlet>

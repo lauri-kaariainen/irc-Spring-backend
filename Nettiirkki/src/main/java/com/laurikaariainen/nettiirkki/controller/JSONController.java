@@ -8,6 +8,8 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.inject.Inject;
 import javax.json.Json;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.laurikaariainen.nettiirkki.bean.Channel;
 import com.laurikaariainen.nettiirkki.service.ChannelService;
+import com.laurikaariainen.nettiirkki.service.ChannelUpdateAndBroadcastService;
 
 import org.atmosphere.cpr.ApplicationConfig;
 import org.atmosphere.cpr.AtmosphereResource;
@@ -54,12 +57,20 @@ public class JSONController {
 	/**
 	 * channels to be supported
 	 */
-	private final String[] CHANNELS = {"#otaniemi", "#punttis", "!3pyy", "#otapokeri" };
+	private final static String[] CHANNELS = {"#otaniemi", "#punttis", "!3pyy", "#otapokeri" };
 	
 	@Inject
 	private ChannelService channelService;
 	
+	//@Inject
+	//private ChannelUpdateAndBroadcastService cuabService;
+	
 	private static final Logger logger = LoggerFactory.getLogger(JSONController.class);
+	
+	
+	public static String[] getCHANNELS(){
+		return CHANNELS;
+	}
 	
 	/**
 	 * Simply selects the home view to render by returning its name.
@@ -69,7 +80,11 @@ public class JSONController {
 		logger.info("Welcome home! The client locale is {}.", locale);
 		for(Cookie cookie : request.getCookies())
 			System.out.println(cookie.getName() +":"+ cookie.getValue());
-		System.out.println(authentication);
+		//System.out.println(authentication);
+		
+		
+		//cuabService.BroadcastChangesToChannels();
+		
 		
 		//System.out.println("JSESSIONID:"+request.getHeader("jsessionid"));
 		//System.out.println("ID:"+request.getHeader("id"));
@@ -166,6 +181,7 @@ public class JSONController {
 	 * @param name
 	 * @param @pathvariable name, response, request
 	 * @throws IOException
+	 * 
 	 */
 	
 	@RequestMapping(value ="websocket/{name}", method = RequestMethod.GET)
@@ -195,9 +211,69 @@ public class JSONController {
 			    SecurityContextHolder.setContext(ctx);
 			    ctx.setAuthentication(authentication);
 	
+			    
+			    AtmosphereResource resource = (AtmosphereResource) request
+		                .getAttribute(FrameworkConfig.ATMOSPHERE_RESOURCE);
+				//Proper subscribe 
+				this.doGet(resource, request, resource.getResponse());
+
+				
+		         //'MAIN' LOOP 
+			
+
+				Channel channel = channelService.getChannel(name);
+				JsonObject json = Json.createObjectBuilder().add("name",channel.getName()).
+						add("text", channel.getText() ).
+						add("timestamp",channel.getLastChanged().toString()).
+						build();
+				
+				 Broadcaster broadcaster = lookupBroadcaster(request.getPathInfo());
+		     
+		      
+		         broadcaster.broadcast(json);
+			         
+					
+				  boolean completed = false;
+				  while(!completed){
+					  if(channelService.updateChannel(channel) == true){
+						  channel = channelService.getChannel(name);
+						  json = Json.createObjectBuilder().add("name",channel.getName()).
+								  add("text", channel.getText() ).
+								  add("timestamp",channel.getLastChanged().toString()).
+								  build();
+						  
+						  broadcaster = lookupBroadcaster(request.getPathInfo());
+						  
+						  
+						  broadcaster.broadcast(json);
+						  completed = true;
+				    
+					  }
+					  System.out.println("principal: "+ principal);
+					  System.out.println("SecurityContext: "+SecurityContextHolder.getContext());
+					  try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						completed = true;
+						e.printStackTrace();
+					}
+				  }
+			    
+			    
+			    
+			    
+			    
+			    
+			    
+			    
+			    
+			    
+			    
+			    
 			}
 			finally{
 				System.out.println("Finished adding new securitycontextholder!");
+				SecurityContextHolder.clearContext();
 			}
 		}
 		//DEBUG
@@ -216,13 +292,54 @@ public class JSONController {
 		System.out.println("first the channel: "+channelService.getChannel(name));
 		
 		*/
+		/*
 		AtmosphereResource resource = (AtmosphereResource) request
                 .getAttribute(FrameworkConfig.ATMOSPHERE_RESOURCE);
-
+		//Proper subscribe 
 		this.doGet(resource, request, resource.getResponse());
 
 		
+         //'MAIN' LOOP 
+	
+
+		Channel channel = channelService.getChannel(name);
+		JsonObject json = Json.createObjectBuilder().add("name",channel.getName()).
+				add("text", channel.getText() ).
+				add("timestamp",channel.getLastChanged().toString()).
+				build();
 		
+		 Broadcaster broadcaster = lookupBroadcaster(request.getPathInfo());
+     
+      
+         broadcaster.broadcast(json);
+	         
+			
+		  boolean completed = false;
+		  while(!completed){
+			  if(channelService.updateChannel(channel) == true){
+				  channel = channelService.getChannel(name);
+				  json = Json.createObjectBuilder().add("name",channel.getName()).
+						  add("text", channel.getText() ).
+						  add("timestamp",channel.getLastChanged().toString()).
+						  build();
+				  
+				  broadcaster = lookupBroadcaster(request.getPathInfo());
+				  
+				  
+				  broadcaster.broadcast(json);
+				  completed = true;
+		    
+			  }
+			  System.out.println("principal: "+ principal);
+			  System.out.println("SecurityContext: "+SecurityContextHolder.getContext());
+			  try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				completed = true;
+				e.printStackTrace();
+			}
+		  }
+		*/ 
         /*
         Channel returnChannel;
 		
@@ -269,7 +386,7 @@ public class JSONController {
 		
 		gen.close();
          */
-		return;
+		//return;
 	}
 
 	@RequestMapping(value ="websocket/{name}", method = RequestMethod.POST)

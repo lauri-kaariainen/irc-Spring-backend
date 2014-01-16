@@ -22,7 +22,7 @@ public interface ChannelService {
 	 * @param channel
 	 * @return true if update did happen
 	 */
-	@PreAuthorize("hasRole('superman')")
+	//@PreAuthorize("hasRole('superman')")
 	public abstract boolean updateChannel(Channel channel);
 	
 	/**
