@@ -69,11 +69,11 @@ public class ChannelUpdateAndBroadcastService {
 				  
 				  
 
-				System.out.println("went for a run3! *******");
+				//System.out.println("went for a run3! *******");
 				JsonObject json;
 				for(int i = 0;i < channels.size();i++){
 					//Channel was updated
-			//		if(channelDao.updateChannel(channels.get(i))){
+					if(channelDao.updateChannel(channels.get(i))){
 						json = Json.createObjectBuilder().add("name",channels.get(i).getName()).
 								add("text", channels.get(i).getText() ).
 								add("timestamp",channels.get(i).getLastChanged().toString()).
@@ -82,7 +82,7 @@ public class ChannelUpdateAndBroadcastService {
 						System.out.println("broadcasting to channel '"+channels.get(i).getName()+
 								"', and text '"+channels.get(i).getText()+"'"+
 								"broadcaster's id: '"+broadcasters.get(i).getID()+"'");
-		//			}
+					}
 				}
 				
 				

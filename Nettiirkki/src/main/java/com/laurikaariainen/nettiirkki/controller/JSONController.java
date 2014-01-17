@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -175,6 +176,7 @@ public class JSONController {
 
 */
 	/**
+	 * TODO: preauthorized can't be used because async security doesn't still work
 	 * Handles channel GETs for all channels in private array 'CHANNELS'
 	 * Also updates via get parameters.
 	 * * This method takes a request to subscribe to the topic
@@ -183,7 +185,7 @@ public class JSONController {
 	 * @throws IOException
 	 * 
 	 */
-	
+	//@PreAuthorize("hasRole('superman')")
 	@RequestMapping(value ="websocket/{name}", method = RequestMethod.GET)
 	public void getChannel(@PathVariable String name,Model model, HttpServletResponse response, HttpServletRequest request, Principal principal, Authentication authentication) throws IOException{
 		//response.setContentType("application/json");
@@ -205,13 +207,16 @@ public class JSONController {
 		
 		//System.out.println("Authentication: "+authentication);
 		//FWIW, THIS MUST BE DONE BECAUSE SECURITYCONTEXTHOLDER IS EMPTY WHEN METHOD IS REACHED VIA AJAX REQUEST !
-	/*	if(SecurityContextHolder.getContext().getAuthentication() == null){
+		/*		    
+		if(SecurityContextHolder.getContext().getAuthentication() == null){
 			try {
 			    SecurityContext ctx = SecurityContextHolder.createEmptyContext();
 			    SecurityContextHolder.setContext(ctx);
 			    ctx.setAuthentication(authentication);
-	
-			    
+			    System.out.println("Injected new context");
+			}
+			finally{}
+		}
 			    AtmosphereResource resource = (AtmosphereResource) request
 		                .getAttribute(FrameworkConfig.ATMOSPHERE_RESOURCE);
 				//Proper subscribe 
@@ -235,7 +240,16 @@ public class JSONController {
 		return;
 	}
 
-	@RequestMapping(value ="websocket/{name}", method = RequestMethod.POST)
+	/**
+	 * 
+	 * @param name
+	 * @param response
+	 * @param request
+	 * @throws IOException
+	 * @deprecated
+	 */
+	
+	//@RequestMapping(value ="websocket/{name}", method = RequestMethod.POST)
 	public void broadcastToChannel(@PathVariable String name, HttpServletResponse response, HttpServletRequest request) throws IOException{
 		//response.setContentType("application/json");
 		

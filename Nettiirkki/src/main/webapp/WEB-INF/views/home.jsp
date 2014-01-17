@@ -19,7 +19,7 @@
 	<sec:authorize access="hasRole('superman')">
 			<h1>AtmosphereHandler PubSub Sample using Atmosphere's JQuery Plug In</h1>
 	        
-	        <h2>Select PubSub topic to subscribe</h2>
+	        <h2>Select Channel to follow</h2>
 	        
 	        <div id='pubsub'>
 	            <input id='topic' type='text'/>
