@@ -230,7 +230,7 @@ public class JSONController {
 	    AtmosphereResource resource = (AtmosphereResource) request
                 .getAttribute(FrameworkConfig.ATMOSPHERE_RESOURCE);
 		//Proper subscribe 
-		this.doGet(resource, request, resource.getResponse());
+		this.doGet(resource, request, resource.getResponse(),name);
 
 		return;
 	}
@@ -256,7 +256,7 @@ public class JSONController {
 				add("timestamp",channel.getLastChanged().toString()).
 				build();
 		
-		 Broadcaster b = lookupBroadcaster(request.getPathInfo());
+		 Broadcaster b = lookupBroadcaster(name);
          String message = request.getReader().readLine();
          
          
@@ -275,13 +275,14 @@ public class JSONController {
     // See AtmosphereHandlerPubSub example - same code as GET
     private void doGet(
                     AtmosphereResource resource,
-                    HttpServletRequest req, HttpServletResponse res) {
+                    HttpServletRequest req, HttpServletResponse res, String channelName) {
             // Log all events on the console, including WebSocket events.
             resource.addEventListener(new WebSocketEventListenerAdapter());
 
             //res.setContentType("text/html;charset=ISO-8859-1");
             res.setContentType("application/json");
-            Broadcaster b = lookupBroadcaster(req.getPathInfo());
+            Broadcaster b = lookupBroadcaster(channelName);
+            System.out.println("Signed in broadcaster with ID: '"+b.getID()+"'");
             resource.setBroadcaster(b);
 
             String header = req.getHeader(HeaderConfig.X_ATMOSPHERE_TRANSPORT);
@@ -303,7 +304,7 @@ public class JSONController {
      * @deprecated
      */
     private void doPost(HttpServletRequest req, Channel channel) throws IOException {
-            Broadcaster b = lookupBroadcaster(req.getPathInfo());
+            Broadcaster b = lookupBroadcaster(req.getRequestURI());
             String message = req.getReader().readLine();
             
             if (message != null && message.indexOf("message") != -1) {

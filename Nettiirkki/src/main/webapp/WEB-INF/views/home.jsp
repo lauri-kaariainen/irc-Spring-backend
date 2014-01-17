@@ -16,7 +16,7 @@
 
 <P>  The time on the server is ${serverTime}. </P>
 
-	<sec:authorize access="isAnonymous() == false">
+	<sec:authorize access="hasRole('superman')">
 			<h1>AtmosphereHandler PubSub Sample using Atmosphere's JQuery Plug In</h1>
 	        
 	        <h2>Select PubSub topic to subscribe</h2>

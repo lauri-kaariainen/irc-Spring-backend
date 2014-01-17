@@ -49,17 +49,7 @@ public class ChannelUpdateAndBroadcastService {
 		running = true;
 		//System.out.println("went for a run! *******");
 		
-		/* 
-		String[] CHANNELNAMES = JSONController.getCHANNELS();
-		ArrayList<Channel> channels = new ArrayList<Channel>();
-		ArrayList<Broadcaster> broadcasters = new ArrayList<Broadcaster>();
 		
-		for(int i = 0; i < CHANNELNAMES.length;i++){
-			channels.add(channelDao.getChannel(CHANNELNAMES[i]));
-			broadcasters.add(BroadcasterFactory.getDefault().lookup(CHANNELNAMES[i], true));
-		}
-		System.out.println("went for a run2! *******");
-		*/
 		
 		//TIMER implementation
 		Timer timer = new Timer();
@@ -78,17 +68,21 @@ public class ChannelUpdateAndBroadcastService {
 				}
 				  
 				  
-			    // Your database code here
+
 				System.out.println("went for a run3! *******");
+				JsonObject json;
 				for(int i = 0;i < channels.size();i++){
 					//Channel was updated
-					if(channelDao.updateChannel(channels.get(i))){
-						JsonObject json = Json.createObjectBuilder().add("name",channels.get(i).getName()).
+			//		if(channelDao.updateChannel(channels.get(i))){
+						json = Json.createObjectBuilder().add("name",channels.get(i).getName()).
 								add("text", channels.get(i).getText() ).
 								add("timestamp",channels.get(i).getLastChanged().toString()).
 								build();
 						broadcasters.get(i).broadcast(json);
-					}
+						System.out.println("broadcasting to channel '"+channels.get(i).getName()+
+								"', and text '"+channels.get(i).getText()+"'"+
+								"broadcaster's id: '"+broadcasters.get(i).getID()+"'");
+		//			}
 				}
 				
 				
