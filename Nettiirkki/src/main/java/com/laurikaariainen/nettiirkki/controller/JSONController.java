@@ -58,7 +58,7 @@ public class JSONController {
 	/**
 	 * channels to be supported
 	 */
-	private final static String[] CHANNELS = {"#otaniemi", "#punttis", "!3pyy", "#otapokeri" };
+	private final static String[] CHANNELS = {"#otaniemi", "#punttis", "!3pyy", "#otapokeri", "laurikki" };
 	
 	@Inject
 	private ChannelService channelService;

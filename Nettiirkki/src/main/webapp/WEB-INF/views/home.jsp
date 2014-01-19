@@ -86,9 +86,11 @@
 	                    detectedTransport = response.transport;
 	                    if (response.status == 200) {
 	                        var data = response.responseBody;
-	                        //console.log(typeof data);
+	                        
 	                        if (data.length > 0) {
-	                            $('ul').prepend($('<li></li>').text(" Message Received: " + data + " but detected transport is " + detectedTransport));
+	                        	$('ul').html("Active channels: ["+$.parseJSON(data).activeChannels+"]");
+	                        	if($.parseJSON(data).text !== undefined)
+		                            $('ul').prepend($('<li></li>').text(" Message Received: " + $.parseJSON(data).text + ", detected transport is " + detectedTransport));
 	                        }
 	                    }
 	                };
