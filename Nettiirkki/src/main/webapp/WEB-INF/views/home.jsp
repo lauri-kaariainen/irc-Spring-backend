@@ -88,9 +88,11 @@
 	                        var data = response.responseBody;
 	                        
 	                        if (data.length > 0) {
-	                        	$('ul').html("Active channels: ["+$.parseJSON(data).activeChannels+"]");
-	                        	if($.parseJSON(data).text !== undefined)
-		                            $('ul').prepend($('<li></li>').text(" Message Received: " + $.parseJSON(data).text + ", detected transport is " + detectedTransport));
+	                        	$('#active').html("Active channels: ["+$.parseJSON(data).activeChannels+"]");
+	                        	if($.parseJSON(data).text !== undefined){
+		                        	$('ul').html();
+	                        		$('ul').prepend($('<li></li>').text(" Message Received: " + $.parseJSON(data).text + ", detected transport is " + detectedTransport));
+	                        	}	                      
 	                        }
 	                    }
 	                };
@@ -113,7 +115,7 @@
 	        
 	                getElementById('connect').onclick = function(event) {
 	                    if (getElementById('topic').value == '') {
-	                        alert("Please enter a PubSub topic to subscribe");
+	                        alert("Please type in a channel to subscribe");
 	                        return;
 	                    }
 	                    connect();
@@ -168,8 +170,9 @@
 	                getElementById('topic').focus();
 	            });
 	        </script>
-		<h2>Real Time PubSub Update</h2>
+		<h2>Output:</h2>
 	        <ul></ul>
+	        <p id="active"></p>
 	</sec:authorize>
 
  <sec:authorize access="isAnonymous()"> 
