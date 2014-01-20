@@ -95,10 +95,12 @@ public class ChannelUpdateAndBroadcastService {
 			// System.out.println("went for a run3! *******");
 			JsonObject json;
 			JsonObjectBuilder jsonBuild;
+			boolean broadcastActiveChannels = false;
 			for (int i = 0; i < channels.size(); i++) {
 				// Channel was updated
 				if (channelDao.updateChannel(this.channels.get(i))) {
 					this.activeChannels.set(i,true);
+					broadcastActiveChannels = true;
 					jsonBuild = Json
 							.createObjectBuilder()
 							.add("name", this.channels.get(i).getName())
@@ -118,17 +120,19 @@ public class ChannelUpdateAndBroadcastService {
 				*/
 				}
 			}
+			if(broadcastActiveChannels == true){
 				//broadcast activeChannels to each channel
-			System.out.println("broadcasting activeChannels: "+activeChannels);
-			String activeChannelsString = "";
-			for(int i = 0; i < activeChannels.size();i++) {
-				if(activeChannels.get(i) == true){
-					activeChannelsString += channels.get(i).getName()+",";
+				System.out.println("broadcasting activeChannels: "+activeChannels);
+				String activeChannelsString = "";
+				for(int i = 0; i < activeChannels.size();i++) {
+					if(activeChannels.get(i) == true){
+						activeChannelsString += channels.get(i).getName()+",";
+					}
+				}
+				for(Broadcaster caster : broadcasters){
+					caster.broadcast(Json.createObjectBuilder().add("activeChannels",activeChannelsString).build());
 				}
 			}
-			for(Broadcaster caster : broadcasters)
-				caster.broadcast(Json.createObjectBuilder().add("activeChannels",activeChannelsString).build());
-		
 			
 
 			System.out.println("While-loop went around!");

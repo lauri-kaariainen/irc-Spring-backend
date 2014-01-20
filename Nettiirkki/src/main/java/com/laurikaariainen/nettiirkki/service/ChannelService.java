@@ -22,6 +22,7 @@ public interface ChannelService {
 	 * @param channel
 	 * @return true if update did happen
 	 */
+	//TODO: preauthorize can't be used without async-support done for spring security
 	//@PreAuthorize("hasRole('superman')")
 	public abstract boolean updateChannel(Channel channel);
 	
@@ -30,7 +31,8 @@ public interface ChannelService {
 	 * @param name
 	 * @return channel
 	 */
-	@PreAuthorize("hasRole('superman')")
+	//TODO: preauthorize can't be used without async-support done for spring security
+	//@PreAuthorize("hasRole('superman')")
 	public abstract Channel getChannel(String name);
 	
 	

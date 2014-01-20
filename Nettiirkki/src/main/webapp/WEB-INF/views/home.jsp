@@ -3,30 +3,36 @@
 <%@ page session="false" %>
 <html>
 <head>
-	<title>Home</title>
+	<title>Irkki</title>
 	<sec:authorize access="isAnonymous() == false">
 		<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.atmosphere/2.1.2/jquery.atmosphere.min.js"></script>
 	</sec:authorize>
+	<style>
+	
+	ul {
+		font-family: 'Consolas';
+		background-color: black;
+		color: rgb(187,187,187);
+	}
+	</style>
 </head>
 <body>
-<h1>
-	Hello world!  
-</h1>
+
 
 <P>  The time on the server is ${serverTime}. </P>
 
 	<sec:authorize access="hasRole('superman')">
-			<h1>AtmosphereHandler PubSub Sample using Atmosphere's JQuery Plug In</h1>
+			<!--h1>AtmosphereHandler PubSub Sample using Atmosphere's JQuery Plug In</h1-->
 	        
-	        <h2>Select Channel to follow</h2>
+	        <p>Select Channel to follow<p>
 	        
 	        <div id='pubsub'>
 	            <input id='topic' type='text'/>
 	        </div>
-	        <h2>Select transport to use for subscribing</h2>
+	        <p>Select transport to use for subscribing</p>
 	        
-	        <h3>You can change the transport any time.</h3>
+	        <p>You can change the transport any time.</p>
 	        
 	        <div id='select_transport'>
 	            <select id="transport">
@@ -40,7 +46,7 @@
 	        <br/>
 	        <br/>
 	        
-	        <h2 id="s_h" class='hidden'>Publish Topic</h2>
+	        <p id="s_h" class='hidden'>Publish Topic</p>
 	        
 	        <div id='sendMessage' class='hidden'>
 	            <input id='phrase' type='text'/>
@@ -79,7 +85,8 @@
 	        
 	            function subscribe() {
 	                var request = { url : document.location.toString() +"websocket/" + getElementByIdValue('topic'),
-	                    transport: getElementByIdValue('transport')};
+	                    transport: getElementByIdValue('transport'),
+	                    timeout: 2000000};
 	                console.log(document.location.toString() +"websocket/" + getElementByIdValue('topic'));
 	
 	                request.onMessage = function (response) {
@@ -88,13 +95,34 @@
 	                        var data = response.responseBody;
 	                        
 	                        if (data.length > 0) {
-	                        	$('#active').html("Active channels: ["+$.parseJSON(data).activeChannels+"]");
-	                        	if($.parseJSON(data).text !== undefined){
-		                        	$('ul').html();
-	                        		$('ul').prepend($('<li></li>').text(" Message Received: " + $.parseJSON(data).text + ", detected transport is " + detectedTransport));
+	                        	if($.parseJSON(data).activeChannels !== undefined){
+	                        		$('#active').html("Active channels: ["+$.parseJSON(data).activeChannels+"]");
+	                        	}
+                        		if($.parseJSON(data).text !== undefined){
+	                        		$('ul').html("<hr>");
+	                        		$('ul').prepend($('<pre></pre>').text($.parseJSON(data).text)).append("<hr>");
 	                        	}	                      
 	                        }
 	                    }
+	                    else
+	                    	alert("response.status was "+response.status)
+	                };
+	                
+	                request.onClose = function (response){
+	                	alert("websocket closed, "+"response.status was "+response.status);
+	                	$('#active').html("websocket closed");
+	                };
+	                
+	                request.onReconnect = function(request, response){
+	                	alert("websocket reconnected, responsestate: "+response.state + ", response.status was "+response.status);
+	                	$('#active').html("websocket reconnected, responsestate: "+response.state);
+	                };
+	                
+	                request.onClientTimeout = function(request){
+	                	alert("client timeouted, trying to reconn");
+	                	$('#active').html("client timeouted");
+	                	subSocket = socket.subscribe(request);           	
+	                	
 	                };
 	
 	                subSocket = socket.subscribe(request);
@@ -170,7 +198,7 @@
 	                getElementById('topic').focus();
 	            });
 	        </script>
-		<h2>Output:</h2>
+		<h5>Output:</h5>
 	        <ul></ul>
 	        <p id="active"></p>
 	</sec:authorize>

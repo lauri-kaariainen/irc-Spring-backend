@@ -57,14 +57,14 @@ public class JSONController {
 
 	/**
 	 * channels to be supported
+	 * when adding channel, remember to make backend-related changes, ie. correct rights for files/dbs for server access
 	 */
-	private final static String[] CHANNELS = {"#otaniemi", "#punttis", "!3pyy", "#otapokeri", "laurikki" };
+	private final static String[] CHANNELS = {"#otaniemi", "#punttis", "!3pyy", "#otapokeri", "laurikki","#synkkasiiseli", "!atkins.ry", "#polygame", "!patoteho", "#kokkikutonen" };
 	
 	@Inject
 	private ChannelService channelService;
 	
-	//@Inject
-	//private ChannelUpdateAndBroadcastService cuabService;
+
 	
 	private static final Logger logger = LoggerFactory.getLogger(JSONController.class);
 	
@@ -79,16 +79,7 @@ public class JSONController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Locale locale, Model model, HttpServletRequest request, Authentication authentication) {
 		logger.info("Welcome home! The client locale is {}.", locale);
-	//	for(Cookie cookie : request.getCookies())
-	//		System.out.println(cookie.getName() +":"+ cookie.getValue());
-		//System.out.println(authentication);
-		
-		
-		//cuabService.BroadcastChangesToChannels();
-		
-		
-		//System.out.println("JSESSIONID:"+request.getHeader("jsessionid"));
-		//System.out.println("ID:"+request.getHeader("id"));
+	
 		
 		Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
@@ -100,81 +91,8 @@ public class JSONController {
 		return "home";
 	}
 	
-	/**
-	 * Handles channel GETs for all channels in private array 'CHANNELS'
-	 * Also updates via get parameters.
-	 * @param name
-	 * @param @pathvariable name, response, request
-	 * @throws IOException
-	 */
-	
-/*
-	@RequestMapping(value ="/{name}", method = RequestMethod.GET)
-	public void getChannel(@PathVariable String name, HttpServletResponse response, HttpServletRequest request) throws IOException{
-		response.setContentType("application/json");
-		
-		
-		boolean wasFound = false;
-		for (String channel : CHANNELS){
-			if(channel.contains(name)) {
-				name = channel;
-				wasFound = true;
-				break;
-			}
-		}
-		if(wasFound == false)
-			return;
-		
-		
-		
-		Channel returnChannel;
-		
-		//GET parameter UPDATE called
-		if(request.getParameter("update") != null){
-			
-			long age = Long.parseLong(request.getParameter("update"));
-			Channel c = new Channel();
-			c.setName(name);
-			c.setLastChanged(new Timestamp(age));
-			if(channelService.updateChannel(c)){
-				returnChannel = c;
-				
-				
-				System.out.println("did indeed update");	
-				
-			}
-			else { // no update necessary, send 304 NOT CHANGED back
-				response.setStatus(304);
-				System.out.println("did indeed cancel");
-				return;
-			}
-			
-		}
-		else {  // Nobody wanted to update, just get the channel
-			returnChannel = channelService.getChannel(name);
-		}
-		
-		PrintWriter out = response.getWriter();
-		
-		JsonGenerator gen = Json.createGenerator(out);
-		
-		
-	
-		gen.writeStartObject();
-		
-		gen.write("name", returnChannel.getName());
-		gen.write("text", returnChannel.getText());
-		gen.write("timestamp", returnChannel.getLastChanged().getTime());
-		
-		
-		
-		gen.writeEnd();
-		
-		gen.close();
-		return;
-	}
 
-*/
+
 	/**
 	 * TODO: preauthorized can't be used because async security doesn't still work
 	 * Handles channel GETs for all channels in private array 'CHANNELS'
@@ -215,17 +133,7 @@ public class JSONController {
 			    ctx.setAuthentication(authentication);
 			    System.out.println("Injected new context");
 			}
-			finally{}
-		}
-			    AtmosphereResource resource = (AtmosphereResource) request
-		                .getAttribute(FrameworkConfig.ATMOSPHERE_RESOURCE);
-				//Proper subscribe 
-				this.doGet(resource, request, resource.getResponse());
-
-
-					
-			    
-			}
+		
 			finally{
 				System.out.println("Finished adding new securitycontextholder!");
 				SecurityContextHolder.clearContext();
@@ -234,9 +142,20 @@ public class JSONController {
 		  */
 	    AtmosphereResource resource = (AtmosphereResource) request
                 .getAttribute(FrameworkConfig.ATMOSPHERE_RESOURCE);
-		//Proper subscribe 
+		//Proper subscribe to named channel!
 		this.doGet(resource, request, resource.getResponse(),name);
 
+		
+		//Return json object with up-to-date text
+		
+		Channel channel = channelService.getChannel(name);
+		JsonObject json = Json.createObjectBuilder().add("name",channel.getName()).
+				add("text", channel.getText() ).
+				add("timestamp",channel.getLastChanged().toString()).
+				build();
+		response.getWriter().print(json);
+		response.getWriter().flush();
+		
 		return;
 	}
 
@@ -343,177 +262,5 @@ public class JSONController {
 	    }
     }
 
-    /*
-	 private void doGet(HttpServletRequest req, HttpServletResponse res, String channelName)
-		       throws IOException {
-		 
-        // Create a Meteor
-        Meteor m = Meteor.build(req);
-
-        // Log all events on the console, including WebSocket events.
-        m.addListener(new WebSocketEventListenerAdapter());
-
-        //res.setContentType("text/html;charset=UTF-8");
-        res.setContentType("text/plain");
-        Broadcaster b = lookupBroadcaster(req.getRequestURI());
-        m.setBroadcaster(b);
-
-        
-        
-        
-        //
-        Channel returnChannel;
-		
-        
-		//GET parameter UPDATE called
-		if(req.getParameter("update") != null){
-			
-			long age = Long.parseLong(req.getParameter("update"));
-			Channel c = new Channel();
-			c.setName(channelName);
-			c.setLastChanged(new Timestamp(age));
-			if(channelService.updateChannel(c)){
-				returnChannel = c;
-				
-				
-				System.out.println("did indeed update");	
-				
-			}
-			else { // no update necessary, send 304 NOT CHANGED back
-				res.setStatus(304);
-				System.out.println("did indeed cancel");
-				return;
-			}
-			
-		}
-		else {  // Nobody wanted to update, just get the channel
-			returnChannel = channelService.getChannel(channelName);
-		}
-		
-		PrintWriter out = res.getWriter();
-		
-		JsonGenerator gen = Json.createGenerator(out);
-		
-		
-	
-		gen.writeStartObject();
-		
-		gen.write("name", returnChannel.getName());
-		gen.write("text", returnChannel.getText());
-		gen.write("timestamp", returnChannel.getLastChanged().getTime());
-		
-		
-		
-		gen.writeEnd();
-		
-		gen.close();
-        
-        
-        //
-        
-        
-        if (req.getHeader(HeaderConfig.X_ATMOSPHERE_TRANSPORT)
-                .equalsIgnoreCase(HeaderConfig.LONG_POLLING_TRANSPORT)) {
-            req.setAttribute(ApplicationConfig.RESUME_ON_BROADCAST, Boolean.TRUE);
-            m.suspend(-1,null);
-        } else {
-            m.suspend(-1);
-        }
-	 }
-	 private void doPost(HttpServletRequest req, HttpServletResponse res)
-		        throws IOException {
-    	System.out.println("inside doPost in Bean");
-        Broadcaster b = lookupBroadcaster(req.getRequestURI());
-        String message = req.getReader().readLine();
-
-        if (message != null && message.indexOf("message") != -1) {
-        	System.out.println("broadcasting:"+message);
-            b.broadcast(message.substring("message=".length()));
-            System.out.println("broadcasted:"+message);
-        }
-        else
-	        	System.out.println("message was not printed b/c it didn't exist!");
-    }
-
-    Broadcaster lookupBroadcaster(String pathInfo) {
-        String[] decodedPath = pathInfo.split("/");
-        Broadcaster b = BroadcasterFactory.getDefault()
-              .lookup(decodedPath[decodedPath.length - 1], true);
-        return b;
-    }
-	
-	*/
-	
-	/**
-	 * handles requests for channel #otaniemi
-	 * @param model
-	 * @return view 'channel'
-	 * @deprecated
-	 */
-	/*
-	@RequestMapping(value ="/otaniemi", method = RequestMethod.GET)
-	public String getOtaniemi(Model model){
-		
-		Channel channel = channelService.getChannel("#otaniemi");
-		System.out.println("*"+channel.getText()+"*");
-		model.addAttribute("channel", channel);
-		
-		return "channel";
-	}
-	*/
-	/**
-	 * handles requests for channel #punttis
-	 * @param model
-	 * @return view 'channel'
-	 * @throws IOException 
-	 * @deprecated
-	 */
-	/*
-	@RequestMapping(value ="/punttis", method = RequestMethod.GET)
-	public void getpunttis(Model model, HttpServletResponse response) throws IOException{
-		response.setContentType("application/json");
-		PrintWriter out = response.getWriter();
-		
-		JsonGenerator gen = Json.createGenerator(out);
-		
-		Channel channel = channelService.getChannel("#punttis");
-		//System.out.println("*"+channel.getText()+"*");
-		//model.addAttribute("channel", channel);
-		
-		//gen.writeStartArray();
-		
-		gen.writeStartObject();
-		
-		gen.write("name", channel.getName());
-		gen.write("text", channel.getText());
-		gen.write("timestamp", channel.getLastChanged().toString());
-		
-		
-		
-		gen.writeEnd();
-		
-		gen.close();
-		return;
-	}
-
-*/	
-	
-	/**
-	 * handles requests for channel !3pyy
-	 * @param model
-	 * @return view 'channel'
-	 * @deprecated
-	 */
-	/*
-	@RequestMapping(value ="/3pyy", method = RequestMethod.GET)
-	public String get3pyy(Model model){
-		
-		Channel channel = channelService.getChannel("!3pyy");
-		System.out.println("*"+channel.getText()+"*");
-		model.addAttribute("channel", channel);
-		
-		return "channel";
-	}
-	
-	 */
+   
 }
