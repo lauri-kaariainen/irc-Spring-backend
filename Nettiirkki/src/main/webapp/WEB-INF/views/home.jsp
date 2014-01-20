@@ -84,6 +84,8 @@
 	                }
 	        
 	            function subscribe() {
+	            	//storing value so on reconnect we return to it
+	            	sessionStorage.channel = getElementByIdValue('topic');
 	                var request = { url : document.location.toString() +"websocket/" + getElementByIdValue('topic'),
 	                    transport: getElementByIdValue('transport'),
 	                    timeout: 2000000};
@@ -99,9 +101,10 @@
 	                        		$('#active').html("Active channels: ["+$.parseJSON(data).activeChannels+"]");
 	                        	}
                         		if($.parseJSON(data).text !== undefined){
-	                        		$('ul').html("<hr>");
-	                        		$('ul').prepend($('<pre></pre>').text($.parseJSON(data).text)).append("<hr>");
-	                        	}	                      
+	                        		$('ul').html("");
+	                        		$('ul').html("<pre>"+handleHighlights($.parseJSON(data).text)+ "</pre>").append("<hr>");
+	                        		$('ul').prepend("<hr>");
+                        		}	                      
 	                        }
 	                    }
 	                    else
@@ -196,8 +199,29 @@
 	                };
 	        
 	                getElementById('topic').focus();
+	            	
+	                
+	                //check if we returned to the page, ie. there is channel in sessionstorage
+	                if(sessionStorage.channel !== undefined){
+	                	document.getElementById('topic').value = sessionStorage.channel;
+	                	subscribe();
+	                }
 	            });
 	        </script>
+	        <script>
+		        //@author lauri
+		        function handleHighlights(text){
+		        	//var newtext = text.replace(/<(?!(br|\s+|\+|@))/gi,"^"); //parsing less-than '<'-char, turning it into '^', not <br/>-s, <@ or <" " or <+though
+		        	var newtext= text.replace(/([^\s]*laurik[^\s]*)/gi,"<span style='font-weight: bold;color: white;'>$1</span>"); //hilight
+		        	//newtext=newtext.replace(/(.*-!-.*)/gi,"<span style='color: grey;'><i>$1</i></span>"); //join||quit||namechange?
+		        	
+		        	newtext = newtext.replace(/http([^\s]*)/gi,"<a href='http$1' target='_blank'>http$1</a>");	//making links out of words starting with http(/s)
+		        	//newtext = newtext.replace(/< /gi,"<  "); //making < nick> the same lenght onscreen as <@nick>
+		        	
+		        	return newtext;
+		        }
+
+			</script>
 		<h5>Output:</h5>
 	        <ul></ul>
 	        <p id="active"></p>
