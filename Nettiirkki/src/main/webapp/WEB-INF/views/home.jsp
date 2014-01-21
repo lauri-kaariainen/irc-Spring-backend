@@ -14,6 +14,13 @@
 		font-family: 'Consolas';
 		background-color: black;
 		color: rgb(187,187,187);
+		font-size: 12px;
+	}
+	
+	pre {
+		white-space: pre-wrap;
+		word-wrap: break-word;
+		
 	}
 	</style>
 </head>
@@ -56,90 +63,111 @@
 			 
 	        <script type="text/javascript">
 	            $(document).ready(function() {
-	            var detectedTransport = null;
-	            var socket = $.atmosphere;
-	            var subSocket;
-	        
-	                function getKeyCode(ev) {
-	                    if (window.event) return window.event.keyCode;
-	                    return ev.keyCode;
-	                }
-	        
-	                function getElementById() {
-	                    return document.getElementById(arguments[0]);
-	                }
-	        
-	                function getTransport(t) {
-	                    transport = t.options[t.selectedIndex].value;
-	                    if (transport == 'autodetect') {
-	                        transport = 'websocket';
-	                    }
-	        
-	                    return false;
-	                }
-	        
-	                function getElementByIdValue() {
-	                    detectedTransport = null;
-	                    return document.getElementById(arguments[0]).value;
-	                }
-	        
-	            function subscribe() {
-	            	//storing value so on reconnect we return to it
-	            	sessionStorage.channel = getElementByIdValue('topic');
-	                var request = { url : document.location.toString() +"websocket/" + getElementByIdValue('topic'),
-	                    transport: getElementByIdValue('transport'),
-	                    timeout: 2000000};
-	                console.log(document.location.toString() +"websocket/" + getElementByIdValue('topic'));
-	
-	                request.onMessage = function (response) {
-	                    detectedTransport = response.transport;
-	                    if (response.status == 200) {
-	                        var data = response.responseBody;
-	                        
-	                        if (data.length > 0) {
-	                        	if($.parseJSON(data).activeChannels !== undefined){
-	                        		$('#active').html("Active channels: ["+$.parseJSON(data).activeChannels+"]");
-	                        	}
-                        		if($.parseJSON(data).text !== undefined){
-	                        		$('ul').html("");
-	                        		$('ul').html("<pre>"+handleHighlights($.parseJSON(data).text)+ "</pre>").append("<hr>");
-	                        		$('ul').prepend("<hr>");
-                        		}	                      
-	                        }
-	                    }
-	                    else
-	                    	alert("response.status was "+response.status)
-	                };
-	                
-	                request.onClose = function (response){
-	                	alert("websocket closed, "+"response.status was "+response.status);
-	                	$('#active').html("websocket closed");
-	                };
-	                
-	                request.onReconnect = function(request, response){
-	                	alert("websocket reconnected, responsestate: "+response.state + ", response.status was "+response.status);
-	                	$('#active').html("websocket reconnected, responsestate: "+response.state);
-	                };
-	                
-	                request.onClientTimeout = function(request){
-	                	alert("client timeouted, trying to reconn");
-	                	$('#active').html("client timeouted");
-	                	subSocket = socket.subscribe(request);           	
-	                	
-	                };
-	
-	                subSocket = socket.subscribe(request);
-	            }
-	
-	            function unsubscribe(){
-	                socket.unsubscribe();
-	            }
-	        
+		            var detectedTransport = null;
+		            var socket = $.atmosphere;
+		            var subSocket;
+		        
+		                function getKeyCode(ev) {
+		                    if (window.event) return window.event.keyCode;
+		                    return ev.keyCode;
+		                }
+		        
+		                function getElementById() {
+		                    return document.getElementById(arguments[0]);
+		                }
+		        
+		                function getTransport(t) {
+		                    transport = t.options[t.selectedIndex].value;
+		                    if (transport == 'autodetect') {
+		                        transport = 'websocket';
+		                    }
+		        
+		                    return false;
+		                }
+		        
+		                function getElementByIdValue() {
+		                    detectedTransport = null;
+		                    return document.getElementById(arguments[0]).value;
+		                }
+		        
+		            function subscribe() {
+		            	//storing value so on reconnect we return to it
+		            	sessionStorage.channel = getElementByIdValue('topic');
+		                var request = { url : document.location.toString() +"websocket/" + getElementByIdValue('topic'),
+		                    transport: getElementByIdValue('transport'),
+		                    timeout: 2000000};
+		                console.log(document.location.toString() +"websocket/" + getElementByIdValue('topic'));
+		
+		                request.onMessage = function (response) {
+		                    detectedTransport = response.transport;
+		                    if (response.status == 200) {
+		                        var data = response.responseBody;
+		                        
+		                        if (data.length > 0) {
+		                        	
+		                        	if($.parseJSON(data).activeChannels !== undefined){
+		                        		
+		                        		console.log("($.parseJSON(data)).activeChannels:"+($.parseJSON(data)).activeChannels);
+		                       
+		                        	
+		                        		$('#active').html("Active channels: [");
+		                        		jQuery.each(($.parseJSON(data)).activeChannels, function(i, val) {
+		                        			console.log(val,($.parseJSON(data)).activeChannels.val,i);
+		                        			var seconds =  Math.ceil((new Date() - new Date(val))/1000);
+		                        			
+		                        			//data-orig-time is for moving the clocks
+		                        			$('#active').append("<span id='"+i+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+i+"</span>"+":"+ "<span class='seconds' data-orig-time="+val +">"+seconds+"</span>" +"s").append(",");
+		                        		
+		                        			
+		                        			//onclick to change channel to whichever "active" one
+		                        			$('#'+i.replace("#","\\#").replace("!","\\!").replace(".","\\.")).on('click',function(){
+		                        				document.getElementById('topic').value = i.split('#').join('').split('.')[0].split("!").join('');
+		                        				connect();
+		                        			}); 
+		                        		});
+		                        		$('#active').append("]");
+		                        		//$('#active').html("Active channels: ["+$.parseJSON($.parseJSON(data).activeChannels).activeChannelName+"]");
+		                        	}
+	                        		if($.parseJSON(data).text !== undefined){
+		                        		$('ul').html("");
+		                        		$('ul').html("<pre>"+handleHighlights($.parseJSON(data).text)+ "</pre>").append("<hr>");
+		                        		$('ul').prepend("<hr>");
+	                        		}	                      
+		                        }
+		                    }
+		                    else
+		                    	alert("response.status was "+response.status)
+		                };
+		                
+		                request.onClose = function (response){
+		                	alert("websocket closed, "+"response.status was "+response.status);
+		                	//$('#active').html("websocket closed");
+		                };
+		                
+		                request.onReconnect = function(request, response){
+		                	alert("websocket reconnected, responsestate: "+response.state + ", response.status was "+response.status);
+		                	//$('#active').html("websocket reconnected, responsestate: "+response.state);
+		                };
+		                
+		                request.onClientTimeout = function(request){
+		                	alert("client timeouted, trying to reconn");
+		                	//$('#active').html("client timeouted");
+		                	subSocket = socket.subscribe(request);           	
+		                	
+		                };
+		
+		                subSocket = socket.subscribe(request);
+		            }
+		
+		            function unsubscribe(){
+		                socket.unsubscribe();
+		            }
+		        
 	                function connect() {
 	                    unsubscribe();
 	                    getElementById('phrase').value = '';
 	                    getElementById('sendMessage').className = '';
-	                    getElementById('phrase').focus();
+	                   //getElementById('phrase').focus();
 	                    subscribe();
 	                    getElementById('connect').value = "Switch transport";
 	                }
@@ -206,6 +234,9 @@
 	                	document.getElementById('topic').value = sessionStorage.channel;
 	                	subscribe();
 	                }
+	                
+	                
+					
 	            });
 	        </script>
 	        <script>
@@ -220,11 +251,30 @@
 		        	
 		        	return newtext;
 		        }
-
+				//@author Pimp Trizkit @ stackoverflow
+				//use with 33FF33,(-)20 for example
+		       function shadeColor(color, percent) {   
+				    var num = parseInt(color,16),
+				    amt = Math.round(2.55 * percent),
+				    R = (num >> 16) + amt,
+				    G = (num >> 8 & 0x00FF) + amt,
+				    B = (num & 0x0000FF) + amt;
+				    return (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1);
+				}
+				
+				//@author lauri
+				//moving the clocks
+				setInterval(function(){
+						$('.seconds').each(function() {
+							this.innerHTML = Math.ceil((new Date() - new Date(parseInt(this.getAttribute('data-orig-time'))))/1000);
+						});
+					},5000);
+				
 			</script>
 		<h5>Output:</h5>
 	        <ul></ul>
 	        <p id="active"></p>
+	        <p id="status" style="background-color:green;float:right;">Initial STATUS</p>
 	</sec:authorize>
 
  <sec:authorize access="isAnonymous()"> 
