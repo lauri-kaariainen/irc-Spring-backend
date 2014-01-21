@@ -1,5 +1,6 @@
 package com.laurikaariainen.nettiirkki.service;
 
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -8,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.json.Json;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
@@ -55,13 +57,13 @@ public class ChannelUpdateAndBroadcastService {
 		String[] CHANNELNAMES = JSONController.getCHANNELS();
 		ArrayList<Channel> channels = new ArrayList<Channel>();
 		ArrayList<Broadcaster> broadcasters = new ArrayList<Broadcaster>();
-		ArrayList<Boolean> activeChannels = new ArrayList<Boolean>();
+		ArrayList<Long> activeChannels = new ArrayList<Long>();
 
 		for (int i = 0; i < CHANNELNAMES.length; i++) {
 			channels.add(channelDao.getChannel(CHANNELNAMES[i]));
 			broadcasters.add(BroadcasterFactory.getDefault().lookup(
 					CHANNELNAMES[i], true));
-			activeChannels.add(false);
+			activeChannels.add((long) 0);
 		}
 
 		// TIMER implementation
@@ -82,9 +84,9 @@ public class ChannelUpdateAndBroadcastService {
 	private class ChannelUpdateAndBroadcastServiceTimerTask extends TimerTask {
 		ArrayList<Channel> channels = new ArrayList<Channel>();
 		ArrayList<Broadcaster> broadcasters = new ArrayList<Broadcaster>();
-		ArrayList<Boolean> activeChannels = new ArrayList<Boolean>();
+		ArrayList<Long> activeChannels = new ArrayList<Long>();
 		public ChannelUpdateAndBroadcastServiceTimerTask(
-				ArrayList<Channel> channels, ArrayList<Broadcaster> broadcasters, ArrayList<Boolean> activeChannels) {
+				ArrayList<Channel> channels, ArrayList<Broadcaster> broadcasters, ArrayList<Long> activeChannels) {
 			this.channels = channels;
 			this.broadcasters = broadcasters;
 			this.activeChannels = activeChannels;
@@ -99,7 +101,7 @@ public class ChannelUpdateAndBroadcastService {
 			for (int i = 0; i < channels.size(); i++) {
 				// Channel was updated
 				if (channelDao.updateChannel(this.channels.get(i))) {
-					this.activeChannels.set(i,true);
+					this.activeChannels.set(i, (new Date()).getTime());
 					broadcastActiveChannels = true;
 					jsonBuild = Json
 							.createObjectBuilder()
@@ -121,17 +123,26 @@ public class ChannelUpdateAndBroadcastService {
 				}
 			}
 			if(broadcastActiveChannels == true){
-				//broadcast activeChannels to each channel
-				System.out.println("broadcasting activeChannels: "+activeChannels);
-				String activeChannelsString = "";
+				JsonObjectBuilder channelJsonBuild = Json.createObjectBuilder();
+				//broadcast activeChannels-jsonObject to each channel
+				//String activeChannelsString = "";
+				
+				JsonObjectBuilder channelJsonArrayBuild = Json.createObjectBuilder();
 				for(int i = 0; i < activeChannels.size();i++) {
-					if(activeChannels.get(i) == true){
-						activeChannelsString += channels.get(i).getName()+",";
+					if(activeChannels.get(i) != 0){
+						channelJsonBuild.add(this.channels.get(i).getName(),activeChannels.get(i));
+						//activeChannelsString += channels.get(i).getName()+":"+activeChannels.get(i)+",";
 					}
 				}
+				channelJsonArrayBuild.add("activeChannels",channelJsonBuild);
+				System.out.println("broadcasting activeChannels: "+activeChannels);
+				//System.out.println(channelJsonArrayBuild.build()+ " + " +Json.createObjectBuilder().add("activeChannels",channelJsonArrayBuild).build());
+				JsonObject channelJson = channelJsonArrayBuild.build();
 				for(Broadcaster caster : broadcasters){
-					caster.broadcast(Json.createObjectBuilder().add("activeChannels",activeChannelsString).build());
+					//caster.broadcast(Json.createObjectBuilder().add("activeChannels",channelJsonArrayBuild).build());
+					caster.broadcast(channelJson);
 				}
+				
 			}
 			
 
