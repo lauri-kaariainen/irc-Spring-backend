@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.security.Principal;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -14,6 +15,7 @@ import java.util.TimerTask;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonGenerator;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -91,6 +93,52 @@ public class JSONController {
 		return "home";
 	}
 	
+	
+	
+	/**
+	 * made to populate every channels' update times on request
+	 * @param response
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/websocket/getActiveChannelsJson", method = RequestMethod.GET)
+	public void getActiveChannelsJson(HttpServletResponse response) throws IOException {
+		response.setContentType("application/json");
+		ArrayList<Channel> activeChannels = new ArrayList<Channel>();
+		for(String str : CHANNELS){
+			activeChannels.add(channelService.getChannel(str));
+		}
+		JsonObjectBuilder channelJsonBuild = Json.createObjectBuilder();
+		//broadcast activeChannels-jsonObject to each channel
+		//String activeChannelsString = "";
+		
+		JsonObjectBuilder channelJsonArrayBuild = Json.createObjectBuilder();
+		for(int i = 0; i < activeChannels.size();i++) {
+				channelJsonBuild.add(activeChannels.get(i).getName(),activeChannels.get(i).getLastChanged().getTime());
+				//activeChannelsString += channels.get(i).getName()+":"+activeChannels.get(i)+",";
+			
+		}
+		channelJsonArrayBuild.add("activeChannels",channelJsonBuild);
+		System.out.println("broadcasting activeChannels: "+activeChannels);
+		//System.out.println(channelJsonArrayBuild.build()+ " + " +Json.createObjectBuilder().add("activeChannels",channelJsonArrayBuild).build());
+		JsonObject channelJson = channelJsonArrayBuild.build();
+		
+			//caster.broadcast(Json.createObjectBuilder().add("activeChannels",channelJsonArrayBuild).build());
+		response.getWriter().print(channelJson);
+		response.getWriter().flush();
+		
+		
+
+
+		
+		
+		return;
+	}
+	/*
+	 
+	 
+	 
+	 */
+	
 
 
 	/**
@@ -155,6 +203,16 @@ public class JSONController {
 				build();
 		response.getWriter().print(json);
 		response.getWriter().flush();
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		return;
 	}

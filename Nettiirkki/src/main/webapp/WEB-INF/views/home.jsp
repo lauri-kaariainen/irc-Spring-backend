@@ -235,8 +235,26 @@
 	                	subscribe();
 	                }
 	                
-	                
-					
+	                //populate activeChannels initially
+            		$.getJSON("websocket/getActiveChannelsJson",function(data){
+            			console.log(data);
+		                $('#active').html("Active channels: [");
+	            		jQuery.each(data.activeChannels, function(i, val) {
+	            			
+	            			var seconds =  Math.ceil((new Date() - new Date(val))/1000);
+	            			
+	            			//data-orig-time is for moving the clocks
+	            			$('#active').append("<span id='"+i+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+i+"</span>"+":"+ "<span class='seconds' data-orig-time="+val +">"+seconds+"</span>" +"s").append(",");
+	            		
+	            			
+	            			//onclick to change channel to whichever "active" one
+	            			$('#'+i.replace("#","\\#").replace("!","\\!").replace(".","\\.")).on('click',function(){
+	            				document.getElementById('topic').value = i.split('#').join('').split('.')[0].split("!").join('');
+	            				connect();
+	            			}); 
+	            		});
+	            		$('#active').append("]");
+            		});
 	            });
 	        </script>
 	        <script>
