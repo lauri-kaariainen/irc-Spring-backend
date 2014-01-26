@@ -14,7 +14,7 @@
 		font-family: 'Consolas';
 		background-color: black;
 		color: rgb(187,187,187);
-		font-size: 12px;
+		font-size: 14px;
 	}
 	
 	pre {
@@ -22,7 +22,16 @@
 		word-wrap: break-word;
 		
 	}
+	pre a {
+		color: cyan;
+	}
+	
+/*	#active {
+		float:right;
+	}
+*/	
 	</style>
+	
 </head>
 <body>
 
@@ -95,10 +104,13 @@
 		            	sessionStorage.channel = getElementByIdValue('topic');
 		                var request = { url : document.location.toString() +"websocket/" + getElementByIdValue('topic'),
 		                    transport: getElementByIdValue('transport'),
-		                    timeout: 2000000};
+		                    timeout: 8000000};
 		                console.log(document.location.toString() +"websocket/" + getElementByIdValue('topic'));
 		
 		                request.onMessage = function (response) {
+		                	$('#status').html("Online");
+		                	$('#status').css("background-color","green");
+		                	
 		                    detectedTransport = response.transport;
 		                    if (response.status == 200) {
 		                        var data = response.responseBody;
@@ -112,15 +124,17 @@
 		                        	
 		                        		$('#active').html("Active channels: [");
 		                        		jQuery.each(($.parseJSON(data)).activeChannels, function(i, val) {
-		                        			console.log(val,($.parseJSON(data)).activeChannels.val,i);
+		                        			
+		                        		//	console.log(val,($.parseJSON(data)).activeChannels.val,i);
 		                        			var seconds =  Math.ceil((new Date() - new Date(val))/1000);
 		                        			
 		                        			//data-orig-time is for moving the clocks
-		                        			$('#active').append("<span id='"+i+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+i+"</span>"+":"+ "<span class='seconds' data-orig-time="+val +">"+seconds+"</span>" +"s").append(",");
+		                        			//TODO: make this so that it won't remove all the clocks from view, maybe select the correct id and change adjacent span's value and attribute 
+		                        			$('#active').append("<span id='"+i+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+i+"</span>"+":"+ "<span class='seconds' data-orig-time="+val +">"+seconds+"</span>" +"s").append("<br/>");
 		                        		
 		                        			
 		                        			//onclick to change channel to whichever "active" one
-		                        			$('#'+i.replace("#","\\#").replace("!","\\!").replace(".","\\.")).on('click',function(){
+		                        			 $('#'+i.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).on('click',function(){
 		                        				document.getElementById('topic').value = i.split('#').join('').split('.')[0].split("!").join('');
 		                        				connect();
 		                        			}); 
@@ -136,21 +150,24 @@
 		                        }
 		                    }
 		                    else
-		                    	alert("response.status was "+response.status)
+		                    	$('#status').html("response.status was "+response.status);
 		                };
 		                
 		                request.onClose = function (response){
-		                	alert("websocket closed, "+"response.status was "+response.status);
+		                	$('#status').html("websocket closed, "+"response.status was "+response.status);
+		                	$('#status').css("background-color","red");
 		                	//$('#active').html("websocket closed");
 		                };
 		                
 		                request.onReconnect = function(request, response){
-		                	alert("websocket reconnected, responsestate: "+response.state + ", response.status was "+response.status);
+		                	$('#status').html("websocket reconnected, responsestate: "+response.state + ", response.status was "+response.status);
+		                	$('#status').css("background-color","yellow");
 		                	//$('#active').html("websocket reconnected, responsestate: "+response.state);
 		                };
 		                
 		                request.onClientTimeout = function(request){
-		                	alert("client timeouted, trying to reconn");
+		                	$('#status').html("client timeouted, trying to reconn");
+		                	$('#status').css("background-color","red");
 		                	//$('#active').html("client timeouted");
 		                	subSocket = socket.subscribe(request);           	
 		                	
@@ -238,23 +255,25 @@
 	                //populate activeChannels initially
             		$.getJSON("websocket/getActiveChannelsJson",function(data){
             			console.log(data);
-		                $('#active').html("Active channels: [");
+		                $('#active').html("");
 	            		jQuery.each(data.activeChannels, function(i, val) {
 	            			
 	            			var seconds =  Math.ceil((new Date() - new Date(val))/1000);
 	            			
 	            			//data-orig-time is for moving the clocks
-	            			$('#active').append("<span id='"+i+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+i+"</span>"+":"+ "<span class='seconds' data-orig-time="+val +">"+seconds+"</span>" +"s").append(",");
+	            			$('#active').append("<span id='"+i+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+i+"</span>"+":"+ "<span class='seconds' data-orig-time="+val +">"+seconds+"</span>" +"s").append("<br/>");
 	            		
 	            			
 	            			//onclick to change channel to whichever "active" one
-	            			$('#'+i.replace("#","\\#").replace("!","\\!").replace(".","\\.")).on('click',function(){
+       		    			$('#'+i.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).on('click',function(){
 	            				document.getElementById('topic').value = i.split('#').join('').split('.')[0].split("!").join('');
 	            				connect();
 	            			}); 
 	            		});
 	            		$('#active').append("]");
             		});
+	                //setting text width:
+	          
 	            });
 	        </script>
 	        <script>
