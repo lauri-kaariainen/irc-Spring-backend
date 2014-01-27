@@ -26,10 +26,29 @@
 		color: cyan;
 	}
 	
-/*	#active {
-		float:right;
+	#active {
+		position:fixed;
+		top: 20%;
+		left: 60%;
+		height: 100%;
+		background-color: white;
+		width: 100%;
+		font-size: 2.2em;
+		overflow: auto;
+	
 	}
-*/	
+	
+	#showChannels{
+		position:fixed;
+		top: 50px;
+		left: 95%;
+		height: 50px;
+		width: 50px;
+		font-size: 60px;
+	}
+	
+	
+
 	</style>
 	
 </head>
@@ -119,11 +138,40 @@
 		                        	
 		                        	if($.parseJSON(data).activeChannels !== undefined){
 		                        		
-		                        		console.log("($.parseJSON(data)).activeChannels:"+($.parseJSON(data)).activeChannels);
+		                        		//console.log("($.parseJSON(data)).activeChannels:"+($.parseJSON(data)).activeChannels);
 		                       
 		                        	
-		                        		$('#active').html("Active channels: [");
-		                        		jQuery.each(($.parseJSON(data)).activeChannels, function(i, val) {
+		                        		$('#active').html("");
+		                        		
+		                        	      
+		        		                var jsonArrayOfData = new Array();
+		        		                jQuery.each($.parseJSON(data).activeChannels, function(i, val) {
+		        		                	//console.log(i+":"+val);
+		        		                	jsonArrayOfData.push({"channel":i, "timestamp":val});
+		        		                });
+		                        		//console.log(jsonArrayOfData); 
+		                        		jsonArrayOfData.sort(sortJsonArrayByDescending("timestamp"));
+		                      
+		                        		jQuery.each(jsonArrayOfData, function(i, val) {
+		        	            			//console.log(i+":"+val.channel+":"+val.timestamp);
+		        	            			var seconds =  Math.ceil((new Date() - new Date(val.timestamp))/1000);
+		        	            			
+		        	            			//data-orig-time is for moving the clocks
+		        	            			$('#active').append("<span id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='seconds' data-orig-time="+val.timestamp +">"+seconds+"</span>" +"s").append("<br/>");
+		        	            		
+		        							//clear possible old bindings 	            			
+		        	            			$('#'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).off();
+		        	            			//onclick to change channel to whichever "active" one
+		               		    			$('#'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).on('click',function(){
+		        	            				document.getElementById('topic').value = val.channel.split('#').join('').split('.')[0].split("!").join('');
+		        	            				connect();
+		        	            				$('#showChannels').css('color','');
+		        	            			}); 
+		        	            		});
+		                        		
+		                        		
+		                        		
+		                        		/* 		jQuery.each(($.parseJSON(data)).activeChannels, function(i, val) {
 		                        			
 		                        		//	console.log(val,($.parseJSON(data)).activeChannels.val,i);
 		                        			var seconds =  Math.ceil((new Date() - new Date(val))/1000);
@@ -132,14 +180,19 @@
 		                        			//TODO: make this so that it won't remove all the clocks from view, maybe select the correct id and change adjacent span's value and attribute 
 		                        			$('#active').append("<span id='"+i+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+i+"</span>"+":"+ "<span class='seconds' data-orig-time="+val +">"+seconds+"</span>" +"s").append("<br/>");
 		                        		
-		                        			
+											//clear previous bindings		                        			
+		                        			$('#'+i.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).off();
 		                        			//onclick to change channel to whichever "active" one
 		                        			 $('#'+i.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).on('click',function(){
 		                        				document.getElementById('topic').value = i.split('#').join('').split('.')[0].split("!").join('');
 		                        				connect();
 		                        			}); 
 		                        		});
-		                        		$('#active').append("]");
+		                      */
+		                      
+		                      
+		                      
+		                        		$('#showChannels').css('color','lightgreen');
 		                        		//$('#active').html("Active channels: ["+$.parseJSON($.parseJSON(data).activeChannels).activeChannelName+"]");
 		                        	}
 	                        		if($.parseJSON(data).text !== undefined){
@@ -157,6 +210,7 @@
 		                	$('#status').html("websocket closed, "+"response.status was "+response.status);
 		                	$('#status').css("background-color","red");
 		                	//$('#active').html("websocket closed");
+		                	  
 		                };
 		                
 		                request.onReconnect = function(request, response){
@@ -169,7 +223,7 @@
 		                	$('#status').html("client timeouted, trying to reconn");
 		                	$('#status').css("background-color","red");
 		                	//$('#active').html("client timeouted");
-		                	subSocket = socket.subscribe(request);           	
+		                	connect();           	
 		                	
 		                };
 		
@@ -256,24 +310,53 @@
             		$.getJSON("websocket/getActiveChannelsJson",function(data){
             			console.log(data);
 		                $('#active').html("");
-	            		jQuery.each(data.activeChannels, function(i, val) {
-	            			
-	            			var seconds =  Math.ceil((new Date() - new Date(val))/1000);
+		                
+		                var jsonArrayOfData = new Array();
+		                jQuery.each(data.activeChannels, function(i, val) {
+		                	//console.log(i+":"+val);
+		                	jsonArrayOfData.push({"channel":i, "timestamp":val});
+		                });
+                		//console.log(jsonArrayOfData); 
+                		jsonArrayOfData.sort(sortJsonArrayByDescending("timestamp"));
+		                
+	            		jQuery.each(jsonArrayOfData, function(i, val) {
+	            			//console.log(i+":"+val.channel+":"+val.timestamp);
+	            			var seconds =  Math.ceil((new Date() - new Date(val.timestamp))/1000);
 	            			
 	            			//data-orig-time is for moving the clocks
-	            			$('#active').append("<span id='"+i+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+i+"</span>"+":"+ "<span class='seconds' data-orig-time="+val +">"+seconds+"</span>" +"s").append("<br/>");
+	            			$('#active').append("<span id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='seconds' data-orig-time="+val.timestamp +">"+seconds+"</span>" +"s").append("<br/>");
 	            		
-	            			
+							//clear possible old bindings 	            			
+	            			$('#'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).off();
 	            			//onclick to change channel to whichever "active" one
-       		    			$('#'+i.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).on('click',function(){
-	            				document.getElementById('topic').value = i.split('#').join('').split('.')[0].split("!").join('');
+       		    			$('#'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).on('click',function(){
+	            				document.getElementById('topic').value = val.channel.split('#').join('').split('.')[0].split("!").join('');
 	            				connect();
+	            				$('#showChannels').css('color','');
 	            			}); 
 	            		});
-	            		$('#active').append("]");
+	            		
             		});
-	                //setting text width:
+	                
 	          
+	                
+            		
+    				//moving the clocks
+    				setInterval(function(){
+    						$('.seconds').each(function() {
+    							this.innerHTML = Math.ceil((new Date() - new Date(parseInt(this.getAttribute('data-orig-time'))))/1000);
+    						});
+    					},5000);
+    				
+            		//set the activeChannels button to move activechannels-div to view and away
+            		
+            		$('#showChannels').on('click',function(){
+            			$('#active').toggle();
+            			$('#showChannels').css('color','');
+            			
+            		});
+	                
+	                
 	            });
 	        </script>
 	        <script>
@@ -299,19 +382,24 @@
 				    return (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1);
 				}
 				
-				//@author lauri
-				//moving the clocks
-				setInterval(function(){
-						$('.seconds').each(function() {
-							this.innerHTML = Math.ceil((new Date() - new Date(parseInt(this.getAttribute('data-orig-time'))))/1000);
-						});
-					},5000);
+				//@author Engineer @ stackoverflow
+		       function sortJsonArrayByDescending(prop){
+		    	   return function(a,b){
+		    	      if( a[prop] > b[prop]){
+		    	          return -1;
+		    	      }else if( a[prop] < b[prop] ){
+		    	          return 1;
+		    	      }
+		    	      return 0;
+		    	   }
+		    	}
 				
 			</script>
 		<h5>Output:</h5>
 	        <ul></ul>
-	        <p id="active"></p>
-	        <p id="status" style="background-color:green;float:right;">Initial STATUS</p>
+	        <button type="button" id="showChannels">*</button>
+	        <div id="active"></div>
+	        <p id="status" style="background-color:green;float:right;margin-right:200px;">Initial STATUS</p>
 	</sec:authorize>
 
  <sec:authorize access="isAnonymous()"> 
