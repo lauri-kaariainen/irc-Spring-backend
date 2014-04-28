@@ -121,7 +121,10 @@
 		            function subscribe() {
 		            	//storing value so on reconnect we return to it
 		            	sessionStorage.channel = getElementByIdValue('topic');
-		                var request = { url : document.location.toString() +"websocket/" + getElementByIdValue('topic'),
+		            	
+		            	//TODO: notice that this is hardcoded, it doesn't need to be
+		            	//original was document.location.toString() + "websocket" + getElemen...
+		                var request = { url : "http://jeuride.sytes.net:8080/nettiirkki/websocket/" + getElementByIdValue('topic'),
 		                    transport: getElementByIdValue('transport'),
 		                    timeout: 8000000};
 		                console.log(document.location.toString() +"websocket/" + getElementByIdValue('topic'));
@@ -135,6 +138,9 @@
 		                        var data = response.responseBody;
 		                        
 		                        if (data.length > 0) {
+		                        	
+		                        	
+		                        	
 		                        	
 		                        	if($.parseJSON(data).activeChannels !== undefined){
 		                        		
