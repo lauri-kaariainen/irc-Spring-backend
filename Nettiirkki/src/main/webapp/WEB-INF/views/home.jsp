@@ -4,6 +4,8 @@
 <html>
 <head>
 	<title>Irkki</title>
+	<script src="../resources/jquery-1.10.2.min.js"></script>
+	<script src="../resources/jquery.atmosphere.min.js"></script>
 	<sec:authorize access="isAnonymous() == false">
 		<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.atmosphere/2.1.2/jquery.atmosphere.min.js"></script>
