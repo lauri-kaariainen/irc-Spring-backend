@@ -4,11 +4,10 @@
 <html>
 <head>
 	<title>Irkki</title>
-	<script src="../resources/jquery-1.10.2.min.js"></script>
-	<script src="../resources/jquery.atmosphere.min.js"></script>
+	
 	<sec:authorize access="isAnonymous() == false">
-		<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
-		<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.atmosphere/2.1.2/jquery.atmosphere.min.js"></script>
+		<script src="resources/jquery-1.10.2.min.js"></script>
+		<script src="resources/jquery.atmosphere.min.js"></script>
 	</sec:authorize>
 	<style>
 	
@@ -125,8 +124,8 @@
 		            	sessionStorage.channel = getElementByIdValue('topic');
 		            	
 		            	//TODO: notice that this is hardcoded, it doesn't need to be
-		            	//original was document.location.toString() + "websocket" + getElemen...
-		                var request = { url : "http://jeuride.sytes.net:8080/nettiirkki/websocket/" + getElementByIdValue('topic'),
+		            	//original was document.location.toString() + "websocket/" + getElemen...
+		                var request = { url : document.location.toString() + "websocket/" + getElementByIdValue('topic'),
 		                    transport: getElementByIdValue('transport'),
 		                    timeout: 8000000};
 		                console.log(document.location.toString() +"websocket/" + getElementByIdValue('topic'));
@@ -315,7 +314,7 @@
 	                }
 	                
 	                //populate activeChannels initially
-            		$.getJSON("websocket/getActiveChannelsJson",function(data){
+            		$.getJSON("ajax/getActiveChannelsJson",function(data){
             			console.log(data);
 		                $('#active').html("");
 		                
