@@ -100,7 +100,7 @@ public class JSONController {
 	 * @param response
 	 * @throws IOException
 	 */
-	@RequestMapping(value = "/websocket/getActiveChannelsJson", method = RequestMethod.GET)
+	@RequestMapping(value = "/ajax/getActiveChannelsJson", method = RequestMethod.GET)
 	public void getActiveChannelsJson(HttpServletResponse response) throws IOException {
 		response.setContentType("application/json");
 		ArrayList<Channel> activeChannels = new ArrayList<Channel>();
