@@ -2,7 +2,7 @@
 	            $(document).ready(function() {
 				
 					var statusElementId = '#status';
-					var selectedNameElementId = '#topic';
+					var selectedNameElementId = '#channelName';
 					var textElementId = '#textElement';
 					var channelListId = '#active';
 				
@@ -56,7 +56,7 @@
 		                        		//console.log("($.parseJSON(data)).activeChannels:"+($.parseJSON(data)).activeChannels);
 		                       
 		                        	
-		                        		$('#active').html("");
+		                        		$(channelListId).html("");
 		                        		
 		                        	      
 		        		                var jsonArrayOfData = new Array();
@@ -72,13 +72,13 @@
 		        	            			var seconds =  Math.ceil((new Date() - new Date(val.timestamp))/1000);
 		        	            			
 		        	            			//data-orig-time is for moving the clocks
-		        	            			$('#active').append("<span id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='seconds' data-orig-time="+val.timestamp +">"+seconds+"</span>" +"s").append("<br/>");
+		        	            			$(channelListId).append("<span id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='seconds' data-orig-time="+val.timestamp +">"+seconds+"</span>" +"s").append(" ");
 		        	            		
 		        							//clear possible old bindings 	            			
 		        	            			$('#'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).off();
 		        	            			//onclick to change channel to whichever "active" one
 		               		    			$('#'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).on('click',function(){
-		        	            				document.getElementById('topic').value = val.channel.split('#').join('').split('.')[0].split("!").join('');
+		        	            				$(selectedNameElementId)[0].value = val.channel.split('#').join('').split('.')[0].split("!").join('');
 		        	            				connect();
 		        	            				
 		        	            			}); 
@@ -135,7 +135,7 @@
 	                    subscribe();
 	                   // getElementById('connect').value = "Switch transport";
 	                }
-	        
+	        /*
 	                getElementById('connect').onclick = function(event) {
 	                    if (getElementById('topic').value == '') {
 	                        alert("Please type in a channel to subscribe");
@@ -143,7 +143,7 @@
 	                    }
 	                    connect();
 	                }
-	        
+	        */
 	      /*          getElementById('topic').onkeyup = function(event) {
 	                    getElementById('sendMessage').className = 'hidden';
 	                    var keyc = getKeyCode(event);
@@ -204,7 +204,7 @@
 	                //populate activeChannels initially
             		$.getJSON("ajax/getActiveChannelsJson",function(data){
             			console.log(data);
-		                $('#active').html("");
+		                $(channelListId).html("");
 		                
 		                var jsonArrayOfData = new Array();
 		                jQuery.each(data.activeChannels, function(i, val) {
@@ -219,7 +219,7 @@
 	            			var seconds =  Math.ceil((new Date() - new Date(val.timestamp))/1000);
 	            			
 	            			//data-orig-time is for moving the clocks
-	            			$(channelListId).append("<span id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='seconds' data-orig-time="+val.timestamp +">"+seconds+"</span>" +"s").append("<br/>");
+	            			$(channelListId).append("<span id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='seconds' data-orig-time="+val.timestamp +">"+seconds+"</span>" +"s").append(" ");
 	            		
 							//clear possible old bindings 	            			
 	            			$('#'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).off();
@@ -242,14 +242,7 @@
     						});
     					},5000);
     				
-            		/*
-            		//set the activeChannels button to move activechannels-div to view and away
-            		$('#showChannels').on('click',function(){
-            			$('#active').toggle();
-            			$('#showChannels').css('color','');
-            			
-            		});
-	                */
+            		
 	                
 	            }); 
 				
@@ -272,7 +265,7 @@
 				    R = (num >> 16) + amt,
 				    G = (num >> 8 & 0x00FF) + amt,
 				    B = (num & 0x0000FF) + amt;
-				    return (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1);
+				    return (0x1000000 + (R<255?R<1?90:R:255)*0x10000 + (G<255?G<1?90:G:255)*0x100 + (B<255?B<1?90:B:255)).toString(16).slice(1);
 				}
 				
 				//@author Engineer @ stackoverflow
@@ -287,4 +280,4 @@
 		    	   }
 		    	}
 				
-		
+				
