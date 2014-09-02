@@ -1,30 +1,32 @@
 
 	            $(document).ready(function() {
-				
+					
+					
+					
 					var statusElementId = '#status';
 					var selectedNameElementId = '#channelName';
 					var textElementId = '#textElement';
-					var channelListId = '#active';
-				
+					var channelListId = '#channelMenu';
+					var channelBarId = '#channelBar';
 				
 		            var detectedTransport = null;
 		            var socket = $.atmosphere;
 		            var subSocket;
 		        
-		                function getKeyCode(ev) {
-		                    if (window.event) return window.event.keyCode;
-		                    return ev.keyCode;
-		                }
-		        
-		                function getElementById() {
-		                    return document.getElementById(arguments[0]);
-		                }
-		        
-		                
-		                function getElementByIdValue() {
-		                    detectedTransport = null;
-		                    return document.getElementById(arguments[0]).value;
-		                }
+					function getKeyCode(ev) {
+						if (window.event) return window.event.keyCode;
+						return ev.keyCode;
+					}
+			
+					function getElementById() {
+						return document.getElementById(arguments[0]);
+					}
+			
+					
+					function getElementByIdValue() {
+						detectedTransport = null;
+						return document.getElementById(arguments[0]).value;
+					}
 		        
 		            function subscribe() {
 						console.log($(selectedNameElementId));
@@ -56,7 +58,7 @@
 		                        		//console.log("($.parseJSON(data)).activeChannels:"+($.parseJSON(data)).activeChannels);
 		                       
 		                        	
-		                        		$(channelListId).html("");
+		                        		$(channelListId).children().remove();
 		                        		
 		                        	      
 		        		                var jsonArrayOfData = new Array();
@@ -72,8 +74,10 @@
 		        	            			var seconds =  Math.ceil((new Date() - new Date(val.timestamp))/1000);
 		        	            			
 		        	            			//data-orig-time is for moving the clocks
-		        	            			$(channelListId).append("<span id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='seconds' data-orig-time="+val.timestamp +">"+seconds+"</span>" +"s").append(" ");
-		        	            		
+		        	            			//$(channelListId).append("<span id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='seconds' data-orig-time="+val.timestamp +">"+seconds+"</span>" +"s").append(" ");
+											//<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a></li>
+											$(channelListId).append("<li role='presentation'>"+"<span role='menuitem' tabindex='-1' id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='minutes' style='color:white;' data-orig-time="+val.timestamp +">"+Math.round(seconds/60)+"</span>" +"<span style='color:#ccc;'>min</span>"+"</li>");
+										
 		        							//clear possible old bindings 	            			
 		        	            			$('#'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).off();
 		        	            			//onclick to change channel to whichever "active" one
@@ -84,16 +88,13 @@
 		        	            			}); 
 		        	            		});
 		                        		
-		                      
-		                        	
-		                        		
 		                        	}
 	                        		if($.parseJSON(data).text !== undefined){
 		                        		$(textElementId).html("");
 		                        		$(textElementId).html("<pre>"+handleHighlights($.parseJSON(data).text)+ "</pre>").append("<hr>");
 		                        		$(textElementId).prepend("<hr>");
-	                        			$('.pre-scrollable').animate({scrollTop:$('pre').height()},1000);
-						}	                      
+										$('.pre-scrollable').animate({scrollTop:$('pre').height()},1000);
+	                        		}	                      
 		                        }
 		                    }
 		                    else
@@ -134,6 +135,10 @@
 	                   // getElementById('sendMessage').className = '';
 	                   //getElementById('phrase').focus();
 	                    subscribe();
+						$('body').css('visibility','hidden');
+						//self._386 = self._386 || {};
+						//self._386.speedFactor = 2;
+						loading();
 	                   // getElementById('connect').value = "Switch transport";
 	                }
 	        /*
@@ -205,8 +210,11 @@
 	                //populate activeChannels initially
             		$.getJSON("ajax/getActiveChannelsJson",function(data){
             			console.log(data);
-		                $(channelListId).html("");
-		                
+						
+		                //$(channelListId).html("");
+		                $(channelListId).children().remove();
+						
+						
 		                var jsonArrayOfData = new Array();
 		                jQuery.each(data.activeChannels, function(i, val) {
 		                	//console.log(i+":"+val);
@@ -220,8 +228,9 @@
 	            			var seconds =  Math.ceil((new Date() - new Date(val.timestamp))/1000);
 	            			
 	            			//data-orig-time is for moving the clocks
-	            			$(channelListId).append("<span id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='seconds' data-orig-time="+val.timestamp +">"+seconds+"</span>" +"s").append(" ");
-	            		
+							//	$(channelListId).append("<span id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='seconds' data-orig-time="+val.timestamp +">"+seconds+"</span>" +"s").append(" ");
+							$(channelListId).append("<li role='presentation'>"+"<span role='menuitem' tabindex='-1' id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='minutes' style='color:white;' data-orig-time="+val.timestamp +">"+Math.round(seconds/60)+"</span>" +"<span style='color:#ccc;'>min</span>"+"</li>");
+										
 							//clear possible old bindings 	            			
 	            			$('#'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).off();
 	            			//onclick to change channel to whichever "active" one
@@ -230,7 +239,7 @@
 	            				connect();
 	            			}); 
 	            		});
-	            		
+	            		console.log("pre height: "+$('pre').height());
             		});
 	                
 	          
@@ -238,8 +247,8 @@
             		
     				//moving the clocks
     				setInterval(function(){
-    						$('.seconds').each(function() {
-    							this.innerHTML = Math.ceil((new Date() - new Date(parseInt(this.getAttribute('data-orig-time'))))/1000);
+    						$('.minutes').each(function() {
+    							this.innerHTML = Math.round((new Date() - new Date(parseInt(this.getAttribute('data-orig-time'))))/1000/60);
     						});
     					},5000);
     				

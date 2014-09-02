@@ -10,7 +10,7 @@
 		<link href="resources/bootstrap/bootstrap-responsive.css" rel="stylesheet">
 		<script src="resources/jquery-1.10.2.min.js"></script>
 		<script src="resources/jquery.atmosphere.min.js"></script>
-		<script src="resources/home.js"></script>
+		
 	</sec:authorize>
 	<style>
 		html {
@@ -24,22 +24,24 @@
 	  }
 	 
 	  .irc-scrollarea {
-		height:82vh;
+		height:77vh;
 	  }
 	  
 	  pre {
 		word-break:normal;
-		color:grey;
+		color: grey;
 		font-size:0.7em;
-		line-height:1.2em;  
-	}
+		line-height:1.2em;
+		}
 	  
 	  .ircStatus {
 		background-color:darkblue;
-	
-		height:20px;
-		overflow-y:auto;
+		height: 20px;
+		color:white;
 		margin:3px;
+	  }
+	  .ircStatus li a {
+	  color:white;
 	  }
 	  
 	  .ircInput {
@@ -49,7 +51,12 @@
 	  
 	  .pre-scrollable {
 		max-height:100%;
+		
 	  }
+	  
+	  .caret {
+		transform: rotate(180deg);
+		}
 	
 
 	</style>
@@ -88,9 +95,30 @@
 			<p>Use this document as a way to quick start any new project.<br> All you get is this message and a barebones HTML document.</p-->
 			<div class="row-fluid irc-scrollarea" ><div class="pre-scrollable"><pre id="textElement"></pre></div></div>
 
-			<div class="row-fluid" >
+			<!--div class="row-fluid" >
 				<p class="ircStatus" id="active">this text is the status bar</p>
-			</div>
+			</div-->
+			
+			
+			
+			<ul class="nav nav-pills ircStatus" id="channelBar">
+			  <li class="dropup pull-right">
+				<a class="dropdown-toggle"
+				   data-toggle="dropdown"
+				   href="#">
+					Channels
+					<b class="caret caret-reversed"></b>
+				  </a>
+				<ul class="dropdown-menu" id="channelMenu">
+					<li role="presentation"><a role="menuitem" tabindex="-1" href="#">No channels</a></li>
+					
+				</ul>
+			  </li>
+			</ul>
+			
+			
+			
+			
 			<div class="row-fluid" >
 				<div class="span4">
 					<p class="ircInput">this is the input area</p>
@@ -104,6 +132,16 @@
 	  
 		</div> <!-- /container -->
 		<script src="resources/bootstrap/bootstrap-transition.js"></script>
+		<script>
+			//this enables cool coming up effect in the bootstrap-386.js file
+			$('body').css('visibility','hidden');
+			self._386 = self._386 || {};
+			self._386.speedFactor = 4;
+		</script>
+		<script src="resources/bootstrap/bootstrap-386.js"></script>
+		<script src="resources/bootstrap/bootstrap-dropdown.js"></script>
+		<script src="resources/bootstrap/bootstrap-scrollspy.js"></script>
+		<script src="resources/home.js"></script>
 	
 	</sec:authorize>
 
@@ -117,5 +155,6 @@
  <%--sec:authorize access="isAnonymous() == false">
 	<a href="j_spring_security_logout" >Sing me out!</a>
 </sec:authorize--%>
+
 </body>
 </html>
