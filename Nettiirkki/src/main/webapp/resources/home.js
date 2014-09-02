@@ -92,7 +92,8 @@
 		                        		$(textElementId).html("");
 		                        		$(textElementId).html("<pre>"+handleHighlights($.parseJSON(data).text)+ "</pre>").append("<hr>");
 		                        		$(textElementId).prepend("<hr>");
-	                        		}	                      
+	                        			$('.pre-scrollable').animate({scrollTop:$('pre').height()},1000);
+						}	                      
 		                        }
 		                    }
 		                    else

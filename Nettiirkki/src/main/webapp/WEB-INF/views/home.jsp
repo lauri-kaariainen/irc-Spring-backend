@@ -29,12 +29,16 @@
 	  
 	  pre {
 		word-break:normal;
-	  }
+		color:grey;
+		font-size:0.7em;
+		line-height:1.2em;  
+	}
 	  
 	  .ircStatus {
 		background-color:darkblue;
 	
-		//height:20px;
+		height:20px;
+		overflow-y:auto;
 		margin:3px;
 	  }
 	  
