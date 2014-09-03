@@ -2,12 +2,15 @@
 	            $(document).ready(function() {
 					
 					
+					//list of when each channel has been checked
+					var listOfWhenChannelsHaveBeenLastChecked = {};
 					
 					var statusElementId = '#status';
 					var selectedNameElementId = '#channelName';
 					var textElementId = '#textElement';
 					var channelListId = '#channelMenu';
 					var channelBarId = '#channelBar';
+					var channelLinkClass = '.channelLink';
 				
 		            var detectedTransport = null;
 		            var socket = $.atmosphere;
@@ -31,16 +34,18 @@
 		            function subscribe() {
 						console.log($(selectedNameElementId));
 		            	//storing value so on reconnect we return to it
-		            	sessionStorage.channel = $(selectedNameElementId)[0].value;
+						
+						sessionStorage.channel = $(selectedNameElementId)[0].value;
 		            	
 		            
-		                var request = { url : document.location.toString() + "websocket/" + $(selectedNameElementId)[0].value,
+		                var request = { url : document.location.toString() + "websocket/" + sessionStorage.channel.split('#').join('').split('.')[0].split("!").join(''),
 		                    transport: 'websocket',
 							fallbackTransport: 'long-polling',
 		                    timeout: 300000};
 		                console.log(document.location.toString() +"websocket/" + $(selectedNameElementId)[0].value);
-		
-		                request.onMessage = function (response) {
+						
+						
+						request.onMessage = function (response) {
 		                	$(statusElementId).html("Online");
 		                	$(statusElementId).css("background-color","green");
 		                	
@@ -59,8 +64,8 @@
 		                       
 		                        	
 		                        		$(channelListId).children().remove();
-		                        		
-		                        	      
+		                        		$(channelBarId+' > '+channelLinkClass).remove();
+		                        	   
 		        		                var jsonArrayOfData = new Array();
 		        		                jQuery.each($.parseJSON(data).activeChannels, function(i, val) {
 		        		                	//console.log(i+":"+val);
@@ -74,15 +79,19 @@
 		        	            			var seconds =  Math.ceil((new Date() - new Date(val.timestamp))/1000);
 		        	            			
 		        	            			//data-orig-time is for moving the clocks
-		        	            			//$(channelListId).append("<span id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='seconds' data-orig-time="+val.timestamp +">"+seconds+"</span>" +"s").append(" ");
-											//<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a></li>
-											$(channelListId).append("<li role='presentation'>"+"<span role='menuitem' tabindex='-1' id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='minutes' style='color:white;' data-orig-time="+val.timestamp +">"+Math.round(seconds/60)+"</span>" +"<span style='color:#ccc;'>min</span>"+"</li>");
-										
+		        	            			$(channelListId).append("<li role='presentation'>"+"<span role='menuitem' tabindex='-1' class='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='minutes' style='color:white;' data-orig-time="+val.timestamp +">"+Math.round(seconds/60)+"</span>" +"<span style='color:#ccc;'>min</span>"+"</li>");
+											//console.log(val.channel+": ("+listOfWhenChannelsHaveBeenLastChecked[val.channel]+" < "+ val.timestamp+")"+(listOfWhenChannelsHaveBeenLastChecked[val.channel] < val.timestamp));
+											
+											//(if i === 0 )hack because the newest item should be always displayed, even though the timestamp 
+											//might be a little too early because back-end time differs from browser time
+											if(listOfWhenChannelsHaveBeenLastChecked[val.channel] < val.timestamp || i === 0)
+												$('.ircStatus').append("<li class='channelLink' ><span class='"+val.channel+"'>"+val.channel.substr(0,4)+"</span>, </li> ");
 		        							//clear possible old bindings 	            			
-		        	            			$('#'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).off();
+		        	            			$('.'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).off();
 		        	            			//onclick to change channel to whichever "active" one
-		               		    			$('#'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).on('click',function(){
-		        	            				$(selectedNameElementId)[0].value = val.channel.split('#').join('').split('.')[0].split("!").join('');
+		               		    			$('.'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).on('click',function(){
+												$(selectedNameElementId)[0].value = val.channel;
+												
 		        	            				connect();
 		        	            				
 		        	            			}); 
@@ -90,12 +99,18 @@
 		                        		
 		                        	}
 	                        		if($.parseJSON(data).text !== undefined){
+										sessionStorage.channel = $(selectedNameElementId)[0].value;
+										console.log(channelBarId+' > '+channelLinkClass+' > .'+$(selectedNameElementId)[0].value.replace("!","\\!").replace("#","\\\#").replace(".","\\."));
+										$(channelBarId+' > '+channelLinkClass+' > .'+$(selectedNameElementId)[0].value.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).parent().remove();
 		                        		$(textElementId).html("");
 		                        		$(textElementId).html("<pre>"+handleHighlights($.parseJSON(data).text)+ "</pre>").append("<hr>");
 		                        		$(textElementId).prepend("<hr>");
 										$('.pre-scrollable').animate({scrollTop:$('pre').height()},1000);
 	                        		}	                      
 		                        }
+								listOfWhenChannelsHaveBeenLastChecked[$(selectedNameElementId)[0].value] = new Date().getTime();
+								console.log( JSON.stringify(listOfWhenChannelsHaveBeenLastChecked));
+								localStorage.listOfWhenChannelsHaveBeenLastChecked  = JSON.stringify(listOfWhenChannelsHaveBeenLastChecked);
 		                    }
 		                    else
 		                    	$(statusElementId).html("response.status was "+response.status);
@@ -203,7 +218,7 @@
 			*/      
 	                //check if we returned to the page, ie. there is channel in sessionstorage
 	                if(sessionStorage.channel !== undefined){
-	                	$(selectedNameElementId)[0].value = sessionStorage.channel;
+						 $(selectedNameElementId)[0].value = sessionStorage.channel;
 	                	subscribe();
 	                }
 	                
@@ -227,19 +242,31 @@
 	            			//console.log(i+":"+val.channel+":"+val.timestamp); 
 	            			var seconds =  Math.ceil((new Date() - new Date(val.timestamp))/1000);
 	            			
-	            			//data-orig-time is for moving the clocks
-							//	$(channelListId).append("<span id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='seconds' data-orig-time="+val.timestamp +">"+seconds+"</span>" +"s").append(" ");
-							$(channelListId).append("<li role='presentation'>"+"<span role='menuitem' tabindex='-1' id='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='minutes' style='color:white;' data-orig-time="+val.timestamp +">"+Math.round(seconds/60)+"</span>" +"<span style='color:#ccc;'>min</span>"+"</li>");
-										
+							//initialize
+							if(!localStorage.listOfWhenChannelsHaveBeenLastChecked)
+								listOfWhenChannelsHaveBeenLastChecked[val.channel] = 0;
+							else{
+								console.log(JSON.parse(localStorage.listOfWhenChannelsHaveBeenLastChecked));
+								listOfWhenChannelsHaveBeenLastChecked[val.channel] = JSON.parse(localStorage.listOfWhenChannelsHaveBeenLastChecked)[val.channel] || 0;
+	            			}
+							//data-orig-time is for moving the clocks
+							$(channelListId).append("<li role='presentation'>"+"<span role='menuitem' tabindex='-1' class='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='minutes' style='color:white;' data-orig-time="+val.timestamp +">"+Math.round(seconds/60)+"</span>" +"<span style='color:#ccc;'>min</span>"+"</li>");
+							if(listOfWhenChannelsHaveBeenLastChecked[val.channel] < val.timestamp)
+								$('.ircStatus').append("<li class='channelLink' ><span class='"+val.channel+"'>"+val.channel.substr(0,4)+"</span>, </li> ");
 							//clear possible old bindings 	            			
-	            			$('#'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).off();
+	            			$('.'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).off();
 	            			//onclick to change channel to whichever "active" one
-       		    			$('#'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).on('click',function(){
-	            				$(selectedNameElementId)[0].value = val.channel.split('#').join('').split('.')[0].split("!").join('');
+       		    			$('.'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).on('click',function(){
+	            				$(selectedNameElementId)[0].value = val.channel;
 	            				connect();
 	            			}); 
 	            		});
-	            		console.log("pre height: "+$('pre').height());
+						
+						
+						localStorage.listOfWhenChannelsHaveBeenLastChecked = JSON.stringify(listOfWhenChannelsHaveBeenLastChecked);
+						
+						console.log(JSON.stringify(listOfWhenChannelsHaveBeenLastChecked));
+	            		
             		});
 	                
 	          
