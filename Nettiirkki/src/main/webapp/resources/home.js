@@ -69,22 +69,23 @@
 		        		                var jsonArrayOfData = new Array();
 		        		                jQuery.each($.parseJSON(data).activeChannels, function(i, val) {
 		        		                	//console.log(i+":"+val);
-		        		                	jsonArrayOfData.push({"channel":i, "timestamp":val});
+		        		                	jsonArrayOfData.push({"channel":i, "timestamp":val}); 
 		        		                });
-		                        		//console.log(jsonArrayOfData); 
+		                        		//console.log(jsonArrayOfData);  
 		                        		jsonArrayOfData.sort(sortJsonArrayByDescending("timestamp"));
+										//hack because the newest item should be always displayed, even though the timestamp 
+										//might be a little too early because back-end time differs from browser time
+		                        		jsonArrayOfData[0].timestamp = new Date(); 
 		                      
 		                        		jQuery.each(jsonArrayOfData, function(i, val) {
 		        	            			//console.log(i+":"+val.channel+":"+val.timestamp);
-		        	            			var seconds =  Math.ceil((new Date() - new Date(val.timestamp))/1000);
+		        	            			var seconds =  Math.ceil((new Date() - new Date(val.timestamp))/1000); 
 		        	            			
 		        	            			//data-orig-time is for moving the clocks
 		        	            			$(channelListId).append("<li role='presentation'>"+"<span role='menuitem' tabindex='-1' class='"+val.channel+"'style='font-weight:bold;color:#"+shadeColor("33FF33",40-Math.floor(0.5*seconds))+";'>"+val.channel+"</span>"+":"+ "<span class='minutes' style='color:white;' data-orig-time="+val.timestamp +">"+Math.round(seconds/60)+"</span>" +"<span style='color:#ccc;'>min</span>"+"</li>");
 											//console.log(val.channel+": ("+listOfWhenChannelsHaveBeenLastChecked[val.channel]+" < "+ val.timestamp+")"+(listOfWhenChannelsHaveBeenLastChecked[val.channel] < val.timestamp));
 											
-											//(if i === 0 )hack because the newest item should be always displayed, even though the timestamp 
-											//might be a little too early because back-end time differs from browser time
-											if(listOfWhenChannelsHaveBeenLastChecked[val.channel] < val.timestamp || i === 0)
+											if(listOfWhenChannelsHaveBeenLastChecked[val.channel] < val.timestamp)
 												$('.ircStatus').append("<li class='channelLink' ><span class='"+val.channel+"'>"+val.channel.substr(0,4)+"</span>, </li> ");
 		        							//clear possible old bindings 	            			
 		        	            			$('.'+val.channel.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).off();
