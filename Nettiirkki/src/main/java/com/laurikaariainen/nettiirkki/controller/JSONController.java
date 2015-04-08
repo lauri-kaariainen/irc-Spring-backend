@@ -171,23 +171,7 @@ public class JSONController {
 			return;
 		}
 		
-		//System.out.println("Authentication: "+authentication);
-		//FWIW, THIS MUST BE DONE BECAUSE SECURITYCONTEXTHOLDER IS EMPTY WHEN METHOD IS REACHED VIA AJAX REQUEST !
-		/*		    
-		if(SecurityContextHolder.getContext().getAuthentication() == null){
-			try {
-			    SecurityContext ctx = SecurityContextHolder.createEmptyContext();
-			    SecurityContextHolder.setContext(ctx);
-			    ctx.setAuthentication(authentication);
-			    System.out.println("Injected new context");
-			}
 		
-			finally{
-				System.out.println("Finished adding new securitycontextholder!");
-				SecurityContextHolder.clearContext();
-			}
-		}
-		  */
 	    AtmosphereResource resource = (AtmosphereResource) request
                 .getAttribute(FrameworkConfig.ATMOSPHERE_RESOURCE);
 		//Proper subscribe to named channel!
