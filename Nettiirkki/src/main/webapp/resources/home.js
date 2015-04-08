@@ -147,15 +147,9 @@
 		        
 	                function connect() {
 	                    unsubscribe();
-	                   // getElementById('phrase').value = '';
-	                   // getElementById('sendMessage').className = '';
-	                   //getElementById('phrase').focus();
+	                
 	                    subscribe();
-						//$('body').css('visibility','hidden');
-						//self._386 = self._386 || {};
-						//self._386.speedFactor = 2;
-						//loading();
-	                   // getElementById('connect').value = "Switch transport";
+						
 	                }
 	        
 	                //check if we returned to the page, ie. there is channel in sessionstorage
