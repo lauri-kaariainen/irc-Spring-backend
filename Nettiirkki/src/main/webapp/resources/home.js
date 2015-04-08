@@ -151,72 +151,13 @@
 	                   // getElementById('sendMessage').className = '';
 	                   //getElementById('phrase').focus();
 	                    subscribe();
-						$('body').css('visibility','hidden');
+						//$('body').css('visibility','hidden');
 						//self._386 = self._386 || {};
 						//self._386.speedFactor = 2;
-						loading();
+						//loading();
 	                   // getElementById('connect').value = "Switch transport";
 	                }
-	        /*
-	                getElementById('connect').onclick = function(event) {
-	                    if (getElementById('topic').value == '') {
-	                        alert("Please type in a channel to subscribe");
-	                        return;
-	                    }
-	                    connect();
-	                }
-	        */
-	      /*          getElementById('topic').onkeyup = function(event) {
-	                    getElementById('sendMessage').className = 'hidden';
-	                    var keyc = getKeyCode(event);
-	                    if (keyc == 13 || keyc == 10) {
-	                        connect();
-	                        return false;
-	                    }
-	                }
 	        
-	                getElementById('phrase').setAttribute('autocomplete', 'OFF');
-	                getElementById('phrase').onkeyup = function(event) {
-	                    var keyc = getKeyCode(event);
-	                    if (keyc == 13 || keyc == 10) {
-	        
-	                        var m = " sent using " + detectedTransport;
-	                        if (detectedTransport == null) {
-	                            detectedTransport = getElementByIdValue('transport');
-	                            m = " sent trying to use " + detectedTransport;
-	                        }
-	        
-	                    subSocket.push({data: 'message=' + getElementByIdValue('phrase') + m});
-	        
-	                        getElementById('phrase').value = '';
-	                        return false;
-	                    }
-	                    return true;
-	                };
-	        */
-			/*
-	                getElementById('send_message').onclick = function(event) {
-	                    if (getElementById('topic').value == '') {
-	                        alert("Please enter a message to publish");
-	                        return;
-	                    }
-	        
-	                    var m = " sent using " + detectedTransport;
-	                    if (detectedTransport == null) {
-	                        detectedTransport = getElementByIdValue('transport');
-	                        m = " sent trying to use " + detectedTransport;
-	                    }
-	        
-	                subSocket.push({data: 'message=' + getElementByIdValue('phrase') + m});
-	        
-	                    getElementById('phrase').value = '';
-	                    return false;
-	                };
-			*/
-	        /*
-	                getElementById('topic').focus();
-	            	
-			*/      
 	                //check if we returned to the page, ie. there is channel in sessionstorage
 	                if(sessionStorage.channel !== undefined){
 						 $(selectedNameElementId)[0].value = sessionStorage.channel;
