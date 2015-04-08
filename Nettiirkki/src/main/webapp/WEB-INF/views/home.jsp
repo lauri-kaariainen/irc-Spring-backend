@@ -138,7 +138,7 @@
 			self._386 = self._386 || {};
 			self._386.speedFactor = 4;
 		</script>
-		<script src="resources/bootstrap/bootstrap-386.js"></script>
+		<script src="resources/bootstrap/bootstrap.min.js"></script>
 		<script src="resources/bootstrap/bootstrap-dropdown.js"></script>
 		<script src="resources/bootstrap/bootstrap-scrollspy.js"></script>
 		<script src="resources/home.js"></script>
