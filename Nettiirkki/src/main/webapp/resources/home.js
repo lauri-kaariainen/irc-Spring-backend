@@ -162,7 +162,7 @@
             		$.getJSON("ajax/getActiveChannelsJson",function(data){
             			console.log(data);
 						
-		                //$(channelListId).html("");
+		                
 		                $(channelListId).children().remove();
 						
 						
