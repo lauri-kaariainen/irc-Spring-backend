@@ -10,6 +10,7 @@
 		<link href="resources/bootstrap/bootstrap-responsive.css" rel="stylesheet">
 		<script src="resources/jquery-1.10.2.min.js"></script>
 		<script src="resources/jquery.atmosphere.min.js"></script>
+		<script src="resources/bootstrap/bootstrap.min.js"></script>
 		
 	</sec:authorize>
 	<style>
@@ -85,19 +86,16 @@
 			
 			<ul class="nav nav-pills ircStatus" id="channelBar">
 			  <li class="dropup pull-right">
-				<a class="dropdown-toggle"
-				   data-toggle="dropdown"
-				   href="#">
-					Channels
+			  	
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#" id="channelMenuLink">Channels
 					<b class="caret caret-reversed"></b>
-				  </a>
-				<ul class="dropdown-menu" id="channelMenu">
+				</a>
+				<ul class="dropdown-menu" id="channelMenu" >
 					<li role="presentation"><a role="menuitem" tabindex="-1" href="#">No channels</a></li>
 					
 				</ul>
 			  </li>
 			</ul>
-			
 			
 			
 			
@@ -113,15 +111,17 @@
 		  
 	  
 		</div> <!-- /container -->
-		<script src="resources/bootstrap/bootstrap-transition.js"></script>
 		<script>
-			//this enables cool coming up effect in the bootstrap-386.js file
+			//this enables cool coming up effect in the bootstrap.js file
 			$('body').css('visibility','hidden');
 			self._386 = self._386 || {};
 			self._386.speedFactor = 4;
+			//enable dropdowns to work (don't know why don't work without, bootstrap-dropdown version 2.3.1)
+			$('.dropdown-toggle').dropdown();
 		</script>
-		<script src="resources/bootstrap/bootstrap.min.js"></script>
+		
 		<script src="resources/bootstrap/bootstrap-dropdown.js"></script>
+		<script src="resources/bootstrap/bootstrap-transition.js"></script>
 		<script src="resources/bootstrap/bootstrap-scrollspy.js"></script>
 		<script src="resources/home.js"></script>
 	
@@ -134,9 +134,7 @@
 		<button type="submit"></button>
 	</form>
 </sec:authorize>
- <%--sec:authorize access="isAnonymous() == false">
-	<a href="j_spring_security_logout" >Sing me out!</a>
-</sec:authorize--%>
+
 
 </body>
 </html>
