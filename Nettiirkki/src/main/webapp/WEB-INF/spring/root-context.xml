@@ -40,7 +40,7 @@
 		<sec:form-login login-page="/" default-target-url="/" always-use-default-target="true"
 			authentication-failure-url="/" />
 
-		<!--sec:logout logout-success-url="/logout" / -->
+		
 		<sec:logout logout-success-url="/" />
 
 	</sec:http>
@@ -57,7 +57,16 @@
 				users-by-username-query="select username, password, 1 as enabled from Users where username=?"
 				authorities-by-username-query="select username, authority from Users WHERE username = ?" /> 
 		</sec:authentication-provider>
+<!-- 		<sec:authentication-provider> -->
+<!--             <sec:user-service> -->
+<!--                 <sec:user name="lauri" password="test%%%##test" authorities="superman" /> -->
+<!--             </sec:user-service> -->
+<!--         </sec:authentication-provider> -->
 	</sec:authentication-manager>
+	
+	
+	
+	
 
 	<!-- enable post/preauthorizes and filters -->
 	<sec:global-method-security
