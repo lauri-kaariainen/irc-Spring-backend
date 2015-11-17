@@ -32,7 +32,7 @@
 					}
 		        
 		            function subscribe() {
-						console.log($(selectedNameElementId));
+						//console.log($(selectedNameElementId));
 		            	//storing value so on reconnect we return to it
 						
 						sessionStorage.channel = $(selectedNameElementId)[0].value;
@@ -42,7 +42,7 @@
 		                    transport: 'websocket',
 							fallbackTransport: 'long-polling',
 		                    timeout: 300000};
-		                console.log(document.location.toString() +"websocket/" + $(selectedNameElementId)[0].value);
+		               // console.log(document.location.toString() +"websocket/" + $(selectedNameElementId)[0].value);
 						
 						
 						request.onMessage = function (response) {
@@ -101,7 +101,7 @@
 		                        	}
 	                        		if($.parseJSON(data).text !== undefined){
 										sessionStorage.channel = $(selectedNameElementId)[0].value;
-										console.log(channelBarId+' > '+channelLinkClass+' > .'+$(selectedNameElementId)[0].value.replace("!","\\!").replace("#","\\\#").replace(".","\\."));
+										//console.log(channelBarId+' > '+channelLinkClass+' > .'+$(selectedNameElementId)[0].value.replace("!","\\!").replace("#","\\\#").replace(".","\\."));
 										$(channelBarId+' > '+channelLinkClass+' > .'+$(selectedNameElementId)[0].value.replace("!","\\!").replace("#","\\\#").replace(".","\\.")).parent().remove();
 		                        		$(textElementId).html("");
 		                        		$(textElementId).html("<pre>"+handleHighlights($.parseJSON(data).text)+ "</pre>").append("<hr>");
@@ -110,7 +110,7 @@
 	                        		}	                      
 		                        }
 								listOfWhenChannelsHaveBeenLastChecked[$(selectedNameElementId)[0].value] = new Date().getTime();
-								console.log( JSON.stringify(listOfWhenChannelsHaveBeenLastChecked));
+								//console.log( JSON.stringify(listOfWhenChannelsHaveBeenLastChecked));
 								localStorage.listOfWhenChannelsHaveBeenLastChecked  = JSON.stringify(listOfWhenChannelsHaveBeenLastChecked);
 		                    }
 		                    else
@@ -160,7 +160,7 @@
 	                
 	                //populate activeChannels initially
             		$.getJSON("ajax/getActiveChannelsJson",function(data){
-            			console.log(data);
+            			//console.log(data);
 						
 		                
 		                $(channelListId).children().remove();
@@ -182,7 +182,7 @@
 							if(!localStorage.listOfWhenChannelsHaveBeenLastChecked)
 								listOfWhenChannelsHaveBeenLastChecked[val.channel] = 0;
 							else{
-								console.log(JSON.parse(localStorage.listOfWhenChannelsHaveBeenLastChecked));
+								//console.log(JSON.parse(localStorage.listOfWhenChannelsHaveBeenLastChecked));
 								listOfWhenChannelsHaveBeenLastChecked[val.channel] = JSON.parse(localStorage.listOfWhenChannelsHaveBeenLastChecked)[val.channel] || 0;
 	            			}
 							//data-orig-time is for moving the clocks
@@ -201,7 +201,7 @@
 						
 						localStorage.listOfWhenChannelsHaveBeenLastChecked = JSON.stringify(listOfWhenChannelsHaveBeenLastChecked);
 						
-						console.log(JSON.stringify(listOfWhenChannelsHaveBeenLastChecked));
+						//console.log(JSON.stringify(listOfWhenChannelsHaveBeenLastChecked));
 	            		
             		});
 	                
